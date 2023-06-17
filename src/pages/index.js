@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
+import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function Index() {
@@ -23,7 +24,7 @@ function Index() {
 
     const handleAddtoCart = (item) => {
         const token = sessionStorage.getItem('token')
-        console.log('token', token)
+
         if (token === null) {
             toast.error('Please Login');
             usenavigate('/Login')
@@ -57,8 +58,9 @@ function Index() {
     return (
         <Fragment>
             <ToastContainer />
+            <Jquery />
             <>
-                <Header />
+
                 {/* Breadcrumb Start */}
                 <div className="container-fluid">
                     <div className="row px-xl-5">
@@ -480,7 +482,7 @@ function Index() {
                                             <div className="text-center py-4">
                                                 <Link className="h6 text-uppercase" to={`detail/${item.id}`}> {item.name}</Link>
                                                 <div className="d-flex align-items-center justify-content-center mt-2">
-                                                    <h5>{VND.format(item.price)}</h5>
+                                                    <h5>{VND.format((item.price - (item.productPromotion.percent * item.price) / 100))}</h5>
                                                     <h6 className="text-muted ml-2">
                                                         <del>{VND.format(item.price)}</del>
                                                     </h6>
@@ -534,7 +536,7 @@ function Index() {
                 </div>
                 {/* Offer End */}
                 {/* Products Start */}
-                {/* <div className="container-fluid pt-5 pb-3">
+                <div className="container-fluid pt-5 pb-3">
                     <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
                         <span className="bg-secondary pr-3">Recent Products</span>
                     </h2>
@@ -860,7 +862,7 @@ function Index() {
                             </div>
                         </div>
                     </div>
-                </div> */}
+                </div>
                 {/* Products End */}
                 {/* Vendor Start */}
                 <div className="container-fluid py-5">
@@ -896,7 +898,7 @@ function Index() {
                     </div>
                 </div>
                 {/* Vendor End */}
-                <Footer />
+
             </>
         </Fragment>
     )

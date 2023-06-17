@@ -7,6 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Jquery from "../components/Jquery";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -117,8 +118,9 @@ function Checkout() {
     return (
         <Fragment>
             <ToastContainer />
+            <Jquery />
             <>
-                <Header />
+
                 {/* Checkout Start */}
                 <div className="container-fluid">
                     <div className="row px-xl-5">
@@ -437,7 +439,7 @@ function Checkout() {
                     </div>
                 </div>
                 {/* Checkout End */}
-                <Footer />
+
             </>
 
         </Fragment>

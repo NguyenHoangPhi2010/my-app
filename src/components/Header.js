@@ -1,32 +1,203 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from "../Services/customize-axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 function Header() {
     const [data, setData] = useState([]);
+    const [countcart, setCountCart] = useState(0)
+    const [searchQuery, setSearchQuery] = useState(null);
+    const [search, setSearch] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [producttype, setProductType] = useState([]);
+    useEffect(() => {
+        getSearch();
+    }, [searchQuery])
+
     useEffect(() => {
         getData();
     }, [])
+    useEffect(() => {
+        getProductType();
+    }, [])
+
     const usenavigate = useNavigate();
+    const token = sessionStorage.getItem('token')
     const getData = () => {
-        const token = sessionStorage.getItem('token')
-        if (token == null) {
-            console.log("Cart null")
-        } else {
-            axios.get('https://localhost:7225/api/Carts', {
-                headers: { 'Authorization': `Bearer ${token}` }
+        axios.get('/api/Carts', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                setData(result.data);
+                setCountCart(result.data.length)
             })
-                .then((result) => {
-                    setData(result.data)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
+            .catch((error) => {
+                console.log();
+            })
 
     }
-    console.log(data)
+    var tong = data.reduce((a, v) => a = a + v.product.price * v.quantity, 0)
+    const getProductType = () => {
+        axios.get('/api/ProductTypes')
+            .then((result) => {
+                setProductType(result.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+
+    }
+    const getSearch = () => {
+        if (!searchQuery) {
+            setSearch(null);
+        } else {
+            axios
+                .get(`https://localhost:7225/api/Home/GetProductHome?search=${searchQuery}`)
+                .then((result) => {
+                    setSearch(result.data);
+                    if (result.data.length == 0) {
+                    } else {
+                        if (result.status === 200) {
+                            //toast.success("Có " + result.data.length + " sản phẩm");
+                        }
+                    }
+                    // const currentURL = new URL(window.location.href);
+                    // const newURL = new URL(currentURL);
+                    // newURL.searchParams.delete('poscats');
+                    // window.history.pushState(newURL.toString());
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+    };
+    const handleAddtoCart = (item) => {
+        const token = sessionStorage.getItem('token')
+
+        if (token === null) {
+            toast.error('Please Login');
+            usenavigate('/Login')
+        }
+        else {
+            const url = 'https://localhost:7225/api/Carts';
+            const data1 = {
+                "accountId": 1,
+                "productId": item.id,
+                "product": null,
+                "quantity": 1
+            }
+
+            //console.log('ok', token)
+            //JSON.parse(sessionStorage.getItem('data')).data1.id;
+            axios.post(url, data1, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then(() => {
+                    toast.success('Đã thêm một sản phẩm vào giỏ hàng');
+                }).catch((error) => {
+                    toast.error(error);
+                })
+        }
+    };
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const result = getSearch(searchQuery);
+        if (result) {
+            search.map((item) => {
+                return (
+                    <div className="hot-deal-active col-lg-4 col-md-4 col-sm-6 col-6">
+                        <div className="single-product">
+                            <div className="pro-img">
+                                <a href="product.html">
+                                    <img
+                                        className="primary-img"
+                                        src={item.image.path1}
+                                        alt="single-product"
+                                    />
+                                    <img
+                                        className="secondary-img"
+                                        src={item.image.path5}
+                                        alt="single-product"
+                                    />
+                                </a>
+                                <div className="countdown" data-countdown="2030/03/01" />
+                                <a
+                                    href="/#"
+                                    className="quick_view"
+                                    data-toggle="modal"
+                                    data-target="/#myModal"
+                                    title="Quick View"
+                                >
+                                    <i className="lnr lnr-magnifier" />
+                                </a>
+                            </div>
+
+                            <div className="pro-content">
+                                <div className="pro-info">
+                                    <h4>
+                                        <a href="product.html">{item.name}</a>
+                                    </h4>
+                                    <p>
+                                        <span className="price">{VND.format(item.price)}</span>
+                                        <del className="prev-price">
+                                            {item.price - item.price * 0.2}
+                                        </del>
+                                    </p>
+                                    <div className="label-product l_sale">
+                                        20<span className="symbol-percent">%</span>
+                                    </div>
+                                    {/* <Rating value={item.rating} /> */}
+                                </div>
+                                <div className="pro-actions">
+                                    <div className="actions-primary">
+                                        <Link to={`/shop/${item.id}`}>
+                                            + Clik to view {item.id}
+                                        </Link>
+                                    </div>
+                                    <div className="actions-primary">
+                                        <a onClick={() => handleAddtoCart(item)} title="Add to Cart">
+                                            + Add To Cart
+                                        </a>
+                                    </div>
+                                    <div className="actions-secondary">
+                                        <a href="compare.html" title="Compare">
+                                            <i className="lnr lnr-sync" />
+                                            <span>Add To Compare</span>
+                                        </a>
+                                        <a href="wishlist.html" title="WishList">
+                                            <i className="lnr lnr-heart" />
+                                            <span>Add to WishList</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            });
+        }
+    };
+    const VND = new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+    });
+    const handleDelect = (item) => {
+        if (
+            window.confirm(
+                "Bạn có chắc chắn muốn xóa " + "'" + item.product.name + "'"
+            ) == true
+        ) {
+            axios.delete(`https://localhost:7225/api/Carts/${item.id}`).then((result) => {
+                console.log(result.status);
+                if (result.status === 204) {
+                    toast.success(
+                        "Xóa thành công sản phẩm " + item.product.name + " ra khỏi giỏ hàng"
+                    );
+                    getData();
+                }
+            });
+        }
+    };
     return (
         <Fragment>
             {/* Topbar Start */}
@@ -42,26 +213,7 @@ function Header() {
                     </div>
                     <div className="col-lg-6 text-center text-lg-right">
                         <div className="d-inline-flex align-items-center">
-                            <div className="btn-group">
-                                <button
-                                    type="button"
-                                    className="btn btn-sm btn-light dropdown-toggle"
-                                    data-toggle="dropdown"
-                                >
-                                    My Account
-                                </button>
-                                <div className="dropdown-menu dropdown-menu-right">
-                                    <Link className="dropdown-item" to={"/login"} type="button">
-                                        Sign in
-                                    </Link>
-                                    <Link className="dropdown-item" to={"/myaccount"} type="button">
-                                        Profile
-                                    </Link>
-                                    <button className="dropdown-item" type="button">
-                                        Sign up
-                                    </button>
-                                </div>
-                            </div>
+
                             <div className="btn-group mx-2">
                                 <button
                                     type="button"
@@ -113,22 +265,14 @@ function Header() {
                                     0
                                 </span>
                             </a>
-                            <Link className="btn px-0 ml-2" to={'/Cart'}>
+                            <Link className="btn px-0 ml-2" to="/cart">
                                 <i className="fas fa-shopping-cart text-dark" />
-                                {data.map((cartItem) =>
-
-                                    cartItem.count > 0 ? (
-                                        <span
-                                            className="badge text-dark border border-dark rounded-circle"
-                                            style={{ paddingBottom: 2 }}
-                                        >
-                                            {cartItem.count}
-                                        </span>
-
-                                    ) : null
-
-                                )}
-
+                                <span
+                                    className="badge text-dark border border-dark rounded-circle"
+                                    style={{ paddingBottom: 2 }}
+                                >
+                                    {countcart}
+                                </span>
                             </Link>
                         </div>
                     </div>
@@ -144,21 +288,60 @@ function Header() {
                             </span>
                         </Link>
                     </div>
+
                     <div className="col-lg-4 col-6 text-left">
-                        <form action="">
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Search for products"
-                                />
-                                <div className="input-group-append">
-                                    <span className="input-group-text bg-transparent text-primary">
-                                        <i className="fa fa-search" />
-                                    </span>
-                                </div>
+                        <div className="categorie-search-box">
+                            <div className="cart-box mt-all-30">
+                                <ul className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                    <li>
+                                        <form onSubmit={handleSubmit}>
+                                            <input
+                                                type="text"
+                                                name="search"
+                                                placeholder="Nhập từ khóa cần tìm"
+                                                value={searchQuery}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                }}
+                                                className="my-search"
+                                                autoComplete="off"
+                                            />
+                                            <button className="bg-transparent text-primary">
+                                                <i className="fa fa-search " />
+                                            </button>
+                                        </form>
+                                        <ul className="ht-dropdown search-box-width">
+                                            <li>
+                                                {search && search.length > 0
+                                                    ? search.map((item) => {
+                                                        return (
+                                                            <div className="single-search-box">
+                                                                <div className="cart-img">
+                                                                    <a href="/#">
+                                                                        <img
+                                                                            src={`ASSETS/image/${item.image}`}
+                                                                            alt="cart-image"
+                                                                        />
+                                                                    </a>
+                                                                </div>
+                                                                <div className="cart-content">
+                                                                    <h6>
+                                                                        <Link to={`detail/${item.id}`}>
+                                                                            {item.name}{" "}
+                                                                        </Link>
+                                                                    </h6>
+                                                                    <h6 className="text-red">{VND.format(item.price)}</h6>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })
+                                                    : ""}
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
                             </div>
-                        </form>
+                        </div>
                     </div>
                     <div className="col-lg-4 col-6 text-right">
                         <p className="m-0">Customer Service</p>
@@ -179,7 +362,7 @@ function Header() {
                         >
                             <h6 className="text-dark m-0">
                                 <i className="fa fa-bars mr-2" />
-                                Categories
+                                Loại sản phẩm
                             </h6>
                             <i className="fa fa-angle-down text-dark" />
                         </a>
@@ -189,53 +372,16 @@ function Header() {
                             style={{ width: "calc(100% - 30px)", zIndex: 999 }}
                         >
                             <div className="navbar-nav w-100">
-                                <div className="nav-item dropdown dropright">
-                                    <a
-                                        href="#"
-                                        className="nav-link dropdown-toggle"
-                                        data-toggle="dropdown"
-                                    >
-                                        Dresses <i className="fa fa-angle-right float-right mt-1" />
-                                    </a>
-                                    <div className="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                        <a href="" className="dropdown-item">
-                                            Men's Dresses
-                                        </a>
-                                        <a href="" className="dropdown-item">
-                                            Women's Dresses
-                                        </a>
-                                        <a href="" className="dropdown-item">
-                                            Baby's Dresses
-                                        </a>
-                                    </div>
-                                </div>
-                                <a href="" className="nav-item nav-link">
-                                    Shirts
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Jeans
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Swimwear
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Sleepwear
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Sportswear
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Jumpsuits
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Blazers
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Jackets
-                                </a>
-                                <a href="" className="nav-item nav-link">
-                                    Shoes
-                                </a>
+                                {
+                                    producttype.map((item, index) => {
+                                        return (
+                                            <a href="" className="nav-item nav-link">
+                                                {item.name}
+                                            </a>
+                                        )
+                                    })
+                                }
+
                             </div>
                         </nav>
                     </div>
@@ -269,7 +415,81 @@ function Header() {
 
 
                                 </div>
-                                <div className="navbar-nav ml-auto py-0 d-none d-lg-block">
+                                <div className="cart-box mx-5 my-n1 py-0 d-none d-lg-block">
+                                    <ul className="my-n1">
+                                        <li >
+                                            <div className="navbar-nav  ml-0 my-2 py-0 d-none d-lg-block">
+                                                <Link href="" className="btn px-0 ml-0 " to={"/cart"}>
+                                                    <i className="fas fa-shopping-cart text-primary " />
+                                                    <span
+                                                        className="badge text-secondary border border-secondary rounded-circle"
+                                                        style={{ paddingBottom: 2 }}
+                                                    >
+                                                        {countcart}
+                                                    </span>
+                                                </Link>
+                                            </div>
+                                            <ul className="ht-dropdown cart-box-width">
+                                                <li>
+                                                    {data && data.length > 0
+                                                        ? data.map((item, index) => {
+                                                            return (
+                                                                <div className="single-cart-box">
+                                                                    <row>
+                                                                        <div className="cart-img">
+                                                                            <a href="/#">
+                                                                                <img
+                                                                                    src={`ASSETS/image/${item.product.image}`}
+                                                                                    alt="cart-image"
+                                                                                />
+                                                                            </a>
+                                                                            <span className="pro-quantity">
+                                                                                {item.quantity}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="cart-content">
+                                                                            <h6>
+                                                                                <Link to={`/shop/${item.id}`}>
+                                                                                    {item.product.name}{" "}
+                                                                                </Link>
+                                                                            </h6>
+                                                                            <row>
+                                                                                <span className="cart-price">
+                                                                                    {VND.format(item.product.price)}
+                                                                                </span>
+                                                                                <a className="btn btn-sm btn-danger" onClick={() => handleDelect(item)}>
+                                                                                    <i className="fa fa-times" />
+                                                                                </a>
+                                                                            </row>
+                                                                        </div>
+
+                                                                    </row>
+
+                                                                </div>
+                                                            );
+                                                        })
+                                                        : "Không có sản phẩm nào"}
+                                                    <div className="cart-footer">
+                                                        <ul className="price-content">
+                                                            <li>
+                                                                Total <span>{VND.format(tong)}</span>
+                                                            </li>
+                                                        </ul>
+                                                        <div className="cart-actions text-center">
+                                                            <Link to="/cart" className="cart-checkout">
+                                                                Xem giỏ hàng
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+                                <div className="navbar-nav ml-0 mb-2 py-0 my-n1 d-none d-lg-block">
                                     <a href="" className="btn px-0">
                                         <i className="fas fa-heart text-primary" />
                                         <span
@@ -279,15 +499,94 @@ function Header() {
                                             0
                                         </span>
                                     </a>
-                                    <a href="" className="btn px-0 ml-3">
+
+                                    {/* <Link href="" className="btn px-0 ml-3" to={"/cart"}>
                                         <i className="fas fa-shopping-cart text-primary" />
                                         <span
                                             className="badge text-secondary border border-secondary rounded-circle"
                                             style={{ paddingBottom: 2 }}
                                         >
-                                            {data.length}
+                                            {countcart}
                                         </span>
-                                    </a>
+                                    </Link>
+                                    <ul className="ht-dropdown cart-box-width">
+                                        <li>
+                                            {data && data.length > 0
+                                                ? data.map((item, index) => {
+                                                    return (
+                                                        <div className="single-cart-box">
+                                                            <row>
+                                                                <div className="cart-img">
+                                                                    <a href="/#">
+                                                                        <img
+                                                                            src={
+                                                                                process.env.PUBLIC_URL +
+                                                                                "/" +
+                                                                                item.product.image.path1
+                                                                            }
+                                                                            alt="cart-image"
+                                                                        />
+                                                                    </a>
+                                                                    <span className="pro-quantity">
+                                                                        {item.quantity}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="cart-content">
+                                                                    <h6>
+                                                                        <Link to={`/shop/${item.id}`}>
+                                                                            {item.product.name}{" "}
+                                                                        </Link>
+                                                                    </h6>
+                                                                    <span className="cart-price">
+                                                                        {VND.format(item.product.price)}
+                                                                    </span>
+                                                                </div>
+                                                                <a className="del-icone">
+                                                                    <i
+                                                                        className="ion-close"
+                                                                        onClick={() => handleDelete(item)}
+                                                                    />
+                                                                </a>
+                                                            </row>
+                                                        </div>
+                                                    );
+                                                })
+                                                : "Không có sản phẩm nào"}
+                                            <div className="cart-footer">
+                                                <ul className="price-content">
+                                                    <li>
+                                                        Total <span>{VND.format(total)}</span>
+                                                    </li>
+                                                </ul>
+                                                <div className="cart-actions text-center">
+                                                    <Link to="/cart" className="cart-checkout">
+                                                        Xem giỏ hàng
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul> */}
+
+                                </div>
+                                <div className="navbar-nav ml-5 py-0 d-none d-lg-block">
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-light dropdown-toggle"
+                                        data-toggle="dropdown"
+                                    >
+                                        My Account
+                                    </button>
+                                    <div className="dropdown-menu dropdown-menu-right">
+                                        <Link className="dropdown-item" to={"/login"} type="button">
+                                            Sign in
+                                        </Link>
+                                        <Link className="dropdown-item" to={"/myaccount"} type="button">
+                                            Profile
+                                        </Link>
+                                        <button className="dropdown-item" type="button">
+                                            Sign up
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </nav>

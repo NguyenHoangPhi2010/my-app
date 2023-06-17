@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import Header from "../../components/Header";
-
+import Jquery from "../../components/Jquery";
 import Menu from "./menu";
 import Invoice from "./Invoice/invoice";
 
@@ -12,8 +12,9 @@ import Invoice from "./Invoice/invoice";
 function MyAccount() {
     return (
         <Fragment>
+            <Jquery />
             <>
-                <Header />
+
                 <Tab.Container id="left-tabs-example" defaultActiveKey="first">
                     <Row>
                         <div className="col-lg-3 col-md-4">

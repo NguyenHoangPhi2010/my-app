@@ -11,14 +11,16 @@ import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Jquery from "../components/Jquery";
 function Profile() {
     return (
         <Fragment>
             <ToastContainer />
+            <Jquery />
             <>
-                <Header />
+
                 <h5>Đơn hàng đang chờ xác nhận vui lòng đợi!!!!</h5>
-                <Footer />
+
             </>
 
         </Fragment>

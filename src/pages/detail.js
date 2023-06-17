@@ -2,7 +2,8 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import axios from "axios";
-import { Link, useParams } from 'react-router-dom';
+import Jquery from "../components/Jquery";
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function Detail() {
@@ -10,6 +11,7 @@ function Detail() {
     const params = useParams();
     const [data, setData] = useState([]);
     const quantityAsNumber = Number(quantity);
+    const usenavigate = useNavigate();
     useEffect(() => {
         getData();
     }, [])
@@ -32,25 +34,34 @@ function Detail() {
 
     }
     const handleAddtoCart = (item) => {
-        const url = 'https://localhost:7225/api/Carts';
-        const data1 = {
-            "accountId": 1,
-            "productId": item.id,
-            "product": null,
-            "quantity": quantity
-        }
-
-        if (data.stock < data1.quantity) {
-            toast.error('Số lượng sản phảm không đủ');
-            setQuantity(data.stock);
+        const token = sessionStorage.getItem('token');
+        if (token === null) {
+            toast.error('Please Login');
+            usenavigate('/Login')
         }
         else {
-            axios.post(url, data1)
-                .then(() => {
-                    toast.success('Đã thêm một sản phẩm vào giỏ hàng');
-                }).catch((error) => {
-                    toast.error(error);
+            const url = 'https://localhost:7225/api/Carts';
+            const data1 = {
+                "accountId": 1,
+                "productId": item.id,
+                "product": null,
+                "quantity": quantity
+            }
+
+            if (data.stock < data1.quantity) {
+                toast.error('Số lượng sản phảm không đủ');
+                setQuantity(data.stock);
+            }
+            else {
+                axios.post(url, data1, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 })
+                    .then(() => {
+                        toast.success('Đã thêm sản phẩm vào giỏ hàng');
+                    }).catch((error) => {
+                        toast.error(error);
+                    })
+            }
         }
 
     }
@@ -61,8 +72,9 @@ function Detail() {
     return (
         <Fragment>
             <ToastContainer />
+            <Jquery />
             <>
-                <Header />
+
 
                 {/* Shop Detail Start */}
 
@@ -560,7 +572,7 @@ function Detail() {
                     </div>
                 </div>
                 {/* Products End */}
-                <Footer />
+
             </>
         </Fragment>
     )

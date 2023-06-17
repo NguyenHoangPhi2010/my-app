@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer"
+import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,32 +16,32 @@ const Login = () => {
         sessionStorage.clear();
     }, []);
 
-    const ProceedLogin = (e) => {
-        e.preventDefault();
-        if (validate()) {
-            ///implentation
-            // console.log('proceed');
-            fetch("https://localhost:7225/Authenticate/login/" + username).then((res) => {
-                return res.json();
-            }).then((resp) => {
-                //console.log(resp)
-                if (Object.keys(resp).length === 0) {
-                    toast.error('Please Enter valid username');
-                } else {
-                    if (resp.password === password) {
-                        toast.success('Success');
-                        sessionStorage.setItem('username', username);
-                        sessionStorage.setItem('token', resp.token);
-                        usenavigate('/')
-                    } else {
-                        toast.error('Please Enter valid credentials');
-                    }
-                }
-            }).catch((err) => {
-                toast.error('Login Failed due to :' + err.message);
-            });
-        }
-    }
+    // const ProceedLogin = (e) => {
+    //     e.preventDefault();
+    //     if (validate()) {
+    //         ///implentation
+    //         // console.log('proceed');
+    //         fetch("https://localhost:7225/Authenticate/login/" + username).then((res) => {
+    //             return res.json();
+    //         }).then((resp) => {
+    //             //console.log(resp)
+    //             if (Object.keys(resp).length === 0) {
+    //                 toast.error('Please Enter valid username');
+    //             } else {
+    //                 if (resp.password === password) {
+    //                     toast.success('Success');
+    //                     sessionStorage.setItem('username', username);
+    //                     sessionStorage.setItem('token', resp.token);
+    //                     usenavigate('/')
+    //                 } else {
+    //                     toast.error('Please Enter valid credentials');
+    //                 }
+    //             }
+    //         }).catch((err) => {
+    //             toast.error('Login Failed due to :' + err.message);
+    //         });
+    //     }
+    // }
 
     const ProceedLoginusingAPI = (e) => {
         e.preventDefault();
@@ -99,8 +100,9 @@ const Login = () => {
     return (
         <Fragment>
             <ToastContainer />
+            <Jquery />
             <>
-                <Header />
+
                 <div className="row">
                     <div className="offset-lg-3 col-lg-6" style={{ marginTop: '100px' }}>
                         <form onSubmit={ProceedLoginusingAPI} className="container">
@@ -126,7 +128,7 @@ const Login = () => {
                         </form>
                     </div>
                 </div>
-                <Footer />
+
             </>
         </Fragment>
     );

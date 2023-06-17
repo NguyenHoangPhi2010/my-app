@@ -7,12 +7,13 @@ import Header from "../../../components/Header";
 import axios from "axios";
 import Menu from "../menu";
 import Invoice from "./invoice";
-
+import Jquery from "../../../components/Jquery";
 
 function InvoiceDetails() {
     const params = useParams();
     const [datadetail, setDataDetail] = useState([]);
     const [data, setData] = useState([]);
+    const [user, setUser] = useState([]);
     useEffect(() => {
         getData();
         getDataDetail();
@@ -37,20 +38,22 @@ function InvoiceDetails() {
             })
             .then((result) => {
                 setData(result.data)
+                setUser(result.data.applicationUser)
             })
             .catch((error) => {
                 console.log(error)
             })
     }
-    console.log("data", data)
+    console.log("user", user)
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
     });
     return (
         <Fragment>
+            <Jquery />
             <>
-                <Header />
+
                 <Tab.Container id="left-tabs-example" defaultActiveKey="detail">
                     <Row>
                         <div className="col-lg-3 col-md-4">
@@ -157,7 +160,7 @@ function InvoiceDetails() {
 
                                                         <div className=" align-middle flex-fill pl-1">
 
-                                                            {/* <p className="font-weight-semi-bold m-1">{data.applicationUser.fullName}</p> */}
+                                                            <p className="font-weight-semi-bold m-1">{user.fullName}</p>
 
                                                         </div>
                                                     </div>
@@ -172,7 +175,7 @@ function InvoiceDetails() {
 
                                                         <div className=" align-middle flex-fill pl-1">
 
-                                                            <p className="font-weight-semi-bold m-1"></p>
+                                                            <p className="font-weight-semi-bold m-1">{user.phoneNumber}</p>
 
                                                         </div>
                                                     </div>
@@ -187,7 +190,7 @@ function InvoiceDetails() {
 
                                                         <div className=" align-middle flex-fill pl-1">
 
-                                                            <p className="font-weight-semi-bold m-1"></p>
+                                                            <p className="font-weight-semi-bold m-1">{user.address}</p>
 
                                                         </div>
                                                     </div>

@@ -1,10 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Header from "../components/Header";
+import Jquery from "../components/Jquery";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Pagination from "../components/pagination";
 function Shop() {
   const [data, setData] = useState([]);
   useEffect(() => {
@@ -56,8 +58,9 @@ function Shop() {
   return (
     <Fragment>
       <ToastContainer />
+      <Jquery />
       <>
-        <Header />
+
         {/* Shop Start */}
         <div className="container-fluid">
           <div className="row px-xl-5">
@@ -286,7 +289,7 @@ function Shop() {
           </div>
         </div>
         {/* Shop End */}
-        <Footer />
+
       </>
     </Fragment>
   )

@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
+import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function Cart() {
@@ -86,13 +87,14 @@ function Cart() {
       usenavigate('/checkout')
     }
   }
-  var tong = data.reduce((a, v) => a = a + v.product.price * v.quantity, 0)
+  var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
   console.log("ok", tong)
   return (
     <Fragment>
       <ToastContainer />
+      <Jquery />
       <>
-        <Header />
+
         {/* Cart Start */}
         {
 
@@ -124,7 +126,7 @@ function Cart() {
 
                               </td>
                               <td>{item.product.name}</td>
-                              <td className="align-middle">{VND.format(item.product.price)}</td>
+                              <td className="align-middle">{VND.format((item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
                               <td className="align-middle">
                                 <div
                                   className="input-group quantity mx-auto"
@@ -148,7 +150,7 @@ function Cart() {
                                   </div>
                                 </div>
                               </td>
-                              <td className="align-middle" >{VND.format(item.quantity * item.product.price)}</td>
+                              <td className="align-middle" >{VND.format(item.quantity * (item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
                               <td className="align-middle">
                                 <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
                                   <i className="fa fa-times" />
@@ -231,7 +233,7 @@ function Cart() {
         }
 
         {/* Cart End */}
-        <Footer />
+
       </>
 
     </Fragment >

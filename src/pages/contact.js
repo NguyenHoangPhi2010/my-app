@@ -1,11 +1,13 @@
 import React, { Fragment } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Jquery from "../components/Jquery";
 function Contact() {
     return (
         <Fragment>
+            <Jquery />
             <>
-                <Header />
+
                 {/* Contact Start */}
                 <div className="container-fluid">
                     <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
@@ -102,7 +104,7 @@ function Contact() {
                     </div>
                 </div>
                 {/* Contact End */}
-                <Footer />
+
             </>
 
         </Fragment>

@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Jquery from "../../../components/Jquery";
 
 function Invoice() {
     const [data, setData] = useState([]);
@@ -47,6 +47,7 @@ function Invoice() {
 
     return (
         <Fragment>
+            <Jquery />
             <>
                 <ToastContainer />
                 <div className="container-fluid ">
