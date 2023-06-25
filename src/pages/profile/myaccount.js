@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import Jquery from "../../components/Jquery";
 import Menu from "./menu";
 import Invoice from "./Invoice/invoice";
+import Account from "./Account/account";
 
 
 function MyAccount() {
@@ -27,8 +28,8 @@ function MyAccount() {
                                     <Tab.Pane eventKey="first">
                                         <Invoice />
                                     </Tab.Pane>
-                                    <Tab.Pane eventKey="detail">
-                                        klajsjas
+                                    <Tab.Pane eventKey="three">
+                                        <Account />
                                     </Tab.Pane>
                                 </Tab.Content>
                             </Col>

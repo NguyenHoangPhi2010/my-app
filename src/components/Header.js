@@ -198,6 +198,31 @@ function Header() {
             });
         }
     };
+    const handlechecklogin = () => {
+        var name = sessionStorage.getItem('username');
+        if (name === null) {
+            return (<div className="dropdown-menu dropdown-menu-right">
+                <Link className="dropdown-item" to={"/login"} type="button">
+                    Sign in
+                </Link>
+                <button className="dropdown-item" type="button">
+                    Sign up
+                </button>
+            </div>)
+        } else {
+            return (<div className="dropdown-menu dropdown-menu-right">
+                <div className="dropdown-item" type="button">
+                    Xin chao {name}
+                </div>
+                <Link className="dropdown-item" to={"/myaccount"} type="button">
+                    Profile
+                </Link>
+                <button className="dropdown-item" type="button">
+                    Sign up
+                </button>
+            </div>)
+        }
+    }
     return (
         <Fragment>
             {/* Topbar Start */}
@@ -576,17 +601,7 @@ function Header() {
                                     >
                                         My Account
                                     </button>
-                                    <div className="dropdown-menu dropdown-menu-right">
-                                        <Link className="dropdown-item" to={"/login"} type="button">
-                                            Sign in
-                                        </Link>
-                                        <Link className="dropdown-item" to={"/myaccount"} type="button">
-                                            Profile
-                                        </Link>
-                                        <button className="dropdown-item" type="button">
-                                            Sign up
-                                        </button>
-                                    </div>
+                                    {handlechecklogin()}
                                 </div>
                             </div>
                         </nav>

@@ -16,6 +16,7 @@ import Invoice from "./pages/profile/Invoice/invoice";
 import InvoiceDetails from "./pages/profile/Invoice/invoicedetail";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Account from "./pages/profile/Account/account";
 function App() {
   const UserLayout = () => (
     <div>
@@ -45,6 +46,7 @@ function App() {
             <Route path='/myaccount' element={<MyAccount />} />
             <Route path='/invoice' element={<Invoice />} />
             <Route path='/invoicedetail/:id' element={<InvoiceDetails />} />
+            <Route path='/account' element={<Account />} />
           </Route>
         </Routes>
 

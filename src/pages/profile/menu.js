@@ -4,7 +4,16 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
+import { Link, useNavigate } from "react-router-dom";
+
 function Menu() {
+    const usenavigate = useNavigate();
+    const handleSighOut = () => {
+        if (window.confirm("Bạn có chắc muốn đăng xuát") === true) {
+            sessionStorage.clear();
+            usenavigate('/')
+        }
+    }
     return (
         <Col >
             <Nav variant="pills" className="flex-column">
@@ -25,7 +34,7 @@ function Menu() {
                             className="d-flex align-items-center "
                             style={{ padding: 5 }}
                         >
-                            <h2 className="fa fa-user text-black-50 mr-2 " />
+                            <h2 className="fa fa-user-circle text-black-50 mr-2 " />
                             <h5 className="font-weight-semi-bold m-0">Thông tin tài khoảng</h5>
                         </div>
                     </Nav.Link>
@@ -35,8 +44,9 @@ function Menu() {
                         <div
                             className="d-flex align-items-center "
                             style={{ padding: 5 }}
+                            onClick={() => handleSighOut()}
                         >
-                            <h2 className="fa fa-sign-in text-black-50 mr-2 " />
+                            <h2 className="fa fa-sign-out text-black-50 mr-2 " />
                             <h5 className="font-weight-semi-bold m-0">Thoát tài khoản</h5>
                         </div>
                     </Nav.Link>
