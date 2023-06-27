@@ -101,7 +101,7 @@ function Checkout() {
             "shippingAddress": shippingAddress,
             "shippingPhone": shippingPhone,
             "total": 0,
-            "status": "string"
+            "status": 1
         }
         console.log('ok', data)
         axios.post(url, data, {

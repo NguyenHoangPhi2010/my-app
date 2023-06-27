@@ -17,9 +17,12 @@ import InvoiceDetails from "./pages/profile/Invoice/invoicedetail";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Account from "./pages/profile/Account/account";
+import { ToastContainer } from "react-bootstrap";
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const UserLayout = () => (
     <div>
+      <ToastContainer />
       <Header />
       <Outlet />
       <Footer />
@@ -29,7 +32,7 @@ function App() {
   return (
 
     <div className="App">
-
+      <ToastContainer />
       <Router>
         <Routes>
           <Route element={<UserLayout />}>

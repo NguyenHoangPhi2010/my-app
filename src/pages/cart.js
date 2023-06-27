@@ -210,8 +210,8 @@ function Cart() {
               style={{ height: 400 }}>
               <img
                 className="position-absolute w-100 h-100"
-                src="ASSETS/img/carousel-3.jpg"
-                style={{ objectFit: 'contain' }}
+                src="ASSETS/img/3.jpg"
+                style={{ objectFit: 'fill' }}
               />
               <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                 <div className="p-3" style={{ maxWidth: 700 }}>

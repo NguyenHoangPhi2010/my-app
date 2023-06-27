@@ -56,6 +56,7 @@ function Index() {
             })
                 .then(() => {
                     toast.success('Đã thêm một sản phẩm vào giỏ hàng');
+
                 }).catch((error) => {
                     toast.error(error);
                 })
@@ -116,7 +117,7 @@ function Index() {
                                         <img
                                             className="position-absolute w-100 h-100"
                                             src="ASSETS/img/carousel-1.jpg"
-                                            style={{ objectFit: 'contain' }}
+                                            style={{ objectFit: 'fill' }}
                                         />
                                         <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                             <div className="p-3" style={{ maxWidth: 700 }}>
@@ -143,7 +144,7 @@ function Index() {
                                         <img
                                             className="position-absolute w-100 h-100"
                                             src="ASSETS/img/carousel-2.jpg"
-                                            style={{ objectFit: 'contain' }}
+                                            style={{ objectFit: 'fill' }}
                                         />
                                         <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                             <div className="p-3" style={{ maxWidth: 700 }}>
@@ -168,9 +169,9 @@ function Index() {
                                         style={{ height: 430 }}
                                     >
                                         <img
-                                            className="position-absolute w-100 h-100"
+                                            className="position-absolute  w-100 h-100"
                                             src="ASSETS/img/carousel-3.jpg"
-                                            style={{ objectFit: 'contain' }}
+                                            style={{ objectFit: 'fill' }}
                                         />
                                         <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                             <div className="p-3" style={{ maxWidth: 700 }}>
@@ -195,7 +196,7 @@ function Index() {
                         </div>
                         <div className="col-lg-4">
                             <div className="product-offer mb-30" style={{ height: 200 }}>
-                                <img className="img-fluid" src="ASSETS/img/offer-1.jpg" alt="" />
+                                <img className="img-fluid" src="ASSETS/img/4.jpg" alt="" />
                                 <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h6>
                                     <h3 className="text-white mb-3">Special Offer</h3>
@@ -205,7 +206,7 @@ function Index() {
                                 </div>
                             </div>
                             <div className="product-offer mb-30" style={{ height: 200 }}>
-                                <img className="img-fluid" src="ASSETS/img/offer-2.jpg" alt="" />
+                                <img className="img-fluid" src="ASSETS/img/5.jpg" alt="" />
                                 <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h6>
                                     <h3 className="text-white mb-3">Special Offer</h3>

@@ -1,33 +1,48 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
-import Col from 'react-bootstrap/Col';
-import Nav from 'react-bootstrap/Nav';
-import Row from 'react-bootstrap/Row';
-import Tab from 'react-bootstrap/Tab';
+import * as Yup from 'yup';
+import { Modal } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Jquery from "../../../components/Jquery";
+import { Form } from "react-bootstrap";
+import { FormFloating, FloatingLabel } from "react-bootstrap";
 const Account = () => {
+    const [show, setShow] = useState(false);
+    const handleClose = () => { setShow(false); }
+    const handleShow = () => setShow(true);
+    const [userName, setUserName] = useState('')
     const [fullname, setFullName] = useState('')
     const [phone, setPhone] = useState('')
     const [email, setEmail] = useState('')
     const [address, setAddress] = useState('')
 
     const [editID, setEditId] = useState('');
-    const [editfulname, setEditFullName] = useState('')
-    const [editphone, setEditPhone] = useState('')
-    const [editemail, setEditEmail] = useState('')
-    const [editaddress, setEditAddress] = useState('')
     const [data, setData] = useState([]);
-    const [disabled, setDisabled] = useState(true);
-
-
+    const [datainvoice, setDataInVoice] = useState([]);
+    const [disabledFN, setDisabledFN] = useState(true);
+    const [disabledE, setDisabledE] = useState(true);
+    const [disabledP, setDisabledP] = useState(true);
+    const [disabledA, setDisabledA] = useState(true);
+    const [password, setPassWord] = useState('')
+    const [passwordNew, setPassWordNew] = useState('')
+    const [passwordS, setPassWordS] = useState('')
+    const usenavigate = useNavigate();
     useEffect(() => {
         getData();
+        getDataInvoice();
     }, [])
-    const toggleInput = () => {
-        setDisabled(!disabled);
+    const editFullName = () => {
+        setDisabledFN(!disabledFN);
+    };
+    const editPhone = () => {
+        setDisabledP(!disabledP);
+    };
+    const editAddress = () => {
+        setDisabledA(!disabledA);
+    };
+    const editEmail = () => {
+        setDisabledE(!disabledE);
     };
     const getData = () => {
         const token = sessionStorage.getItem('token')
@@ -35,7 +50,9 @@ const Account = () => {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then((result) => {
+                setEditId(result.data.id)
                 setData(result.data)
+                setUserName(result.data.userName)
                 setFullName(result.data.fullName)
                 setAddress(result.data.address)
                 setEmail(result.data.email)
@@ -45,16 +62,104 @@ const Account = () => {
                 console.log(error)
             })
     }
+    const getDataInvoice = () => {
+        const token = sessionStorage.getItem('token')
+        if (token == null) {
+            console.log("Cart null")
+        } else {
+            axios.get('https://localhost:7225/api/Invoices', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then((result) => {
+                    setDataInVoice(result.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
 
+    }
+    var tong = datainvoice.reduce((a, v) => a = a + v.total, 0)
+    const handleUpdate = () => {
+        const url = `https://localhost:7225/api/Accounts/${editID}`;
+        const data1 = {
+            "address": address,
+            "fullName": fullname,
+            "avatar": data.avatar,
+            "status": data.status,
+            "id": editID,
+            "userName": data.userName,
+            "normalizedUserName": data.normalizedUserName,
+            "email": email,
+            "normalizedEmail": email.toUpperCase(),
+            "emailConfirmed": false,
+            "passwordHash": data.papasswordHash,
+            "securityStamp": data.securityStamp,
+            "concurrencyStamp": data.concurrencyStamp,
+            "phoneNumber": phone,
+            "phoneNumberConfirmed": false,
+            "twoFactorEnabled": false,
+            "lockoutEnd": null,
+            "lockoutEnabled": true,
+            "accessFailedCount": 0
+        }
+        axios.put(url, data1)
+            .then((result) => {
+                getData();
+                setDisabledE(true);
+                setDisabledA(true);
+                setDisabledFN(true);
+                setDisabledP(true)
+                toast.success('Đã thay đổi thành công');
+            }).catch((error) => {
+                toast.error(error);
+            })
+    }
+    const VND = new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+    });
+    const passwordSchema = Yup.string()
+        .required('Password is required')
+        .min(8, 'Password must be at least 8 characters long')
+        .matches(
+            /^(?=.*\d)(?=.*[!@#$%?*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%?*]{8,}$/,
+            "Mật khẩu phải nhiều hơn 8 ký tự, ít nhất 1 chữ thường 1 chữ in hoa, 1 chữ số, 1 ký tự đặc biệt"
+        );
+    const handleChangePassWord = async () => {
+        try {
+            await passwordSchema.validate(passwordNew);
+            await passwordSchema.validate(passwordS);
+            if (passwordNew != passwordS) {
+                toast.error('Mật khẩu mới và mật khẩu xác nhận không trùng khớp');
+            } else {
+                const url = 'https://localhost:7225/api/Accounts/ChangePassword'
+                const data = {
+                    "username": userName,
+                    "oldPassword": password,
+                    "newPassword": passwordNew
+                }
+                axios.put(url, data)
+                    .then((result) => {
+                        toast.success('Đã thay đổi thành công');
+                        usenavigate('/login')
+                    }).catch((error) => {
+                        toast.error("Đã thay đổi không thành công");
+                    })
+            }
+            toast.success('Đã thay đổi thành công');
+        } catch (err) {
+            toast.error('Mật khẩu không phù hợp');
+        }
+
+
+    }
     return (
         <Fragment>
             <ToastContainer />
-
-
-
             <div className="container-fluid py-4 mb-41">
 
-                <div className="col-12">
+                <div className="col-12 ">
                     <div className="card">
                         <h5 style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
                         <div className="row  mb-41">
@@ -66,32 +171,42 @@ const Account = () => {
                                     >
                                         Họ và tên:
                                     </label>
-                                    <input
-                                        className="forms-control input-lg"
-                                        type="text" placeholder="Nhập Mã sản phẩm"
-                                        value={fullname} onChange={(e) => {
-                                            setEditFullName(e.target.value);
-                                        }}
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <input
+                                            className="forms-control input-lg"
+                                            type="text" placeholder="Nhập Mã sản phẩm"
+                                            value={fullname} onChange={(e) => {
+                                                setFullName(e.target.value);
+                                            }}
+                                            disabled={disabledFN}
 
-                                        disabled={disabled}
-                                    />
-
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editFullName()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div className=" col-md-8 mb-auto">
                                 <div className="forms-group">
+
                                     <label
                                         htmlFor="example-text-input"
                                         className="forms-control-label"
                                     >
                                         Số điện thoại:
                                     </label>
-                                    <input
-                                        className="forms-control"
-                                        placeholder="Nhập thông tin của GPU"
-                                        value={phone} onChange={(e) => setEditPhone(e.target.value)}
-                                        disabled={disabled} />
-
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <input
+                                            className="forms-control"
+                                            placeholder="Nhập thông tin của GPU"
+                                            value={phone} onChange={(e) => setPhone(e.target.value)}
+                                            disabled={disabledP}
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editPhone()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div className="col-md-8 mb-auto">
@@ -102,11 +217,35 @@ const Account = () => {
                                     >
                                         Email:
                                     </label>
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <input
+                                            className="forms-control"
+                                            placeholder="Nhập thông tin của GPU"
+                                            value={email} onChange={(e) => setEmail(e.target.value)}
+                                            disabled={disabledE}
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editEmail()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-8 mb-auto ">
+                                <div className="forms-group">
+                                    <label
+                                        htmlFor="example-text-input"
+                                        className="forms-control-label"
+                                    >
+                                        Tổng tiền đã nua sắm
+                                    </label>
+
                                     <input
-                                        className="forms-control"
+                                        className="forms-control ml-1"
                                         placeholder="Nhập thông tin của GPU"
-                                        value={email} onChange={(e) => setEditEmail(e.target.value)}
-                                        disabled={disabled} />
+                                        value={VND.format(tong)}
+                                        disabled
+                                    />
+
                                 </div>
                             </div>
                             <div className="col-md-8 mb-auto">
@@ -117,20 +256,30 @@ const Account = () => {
                                     >
                                         Đia chỉ:
                                     </label>
-                                    <textarea
-
-                                        rows={3}
-                                        className="form-control"
-                                        placeholder="Nhập thông tin của màn hình"
-                                        value={address} onChange={(e) => setEditAddress(e.target.value)}
-                                        disabled={disabled} />
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <textarea
+                                            rows={3}
+                                            className="forms-control"
+                                            placeholder="Nhập thông tin của màn hình"
+                                            value={address} onChange={(e) => setAddress(e.target.value)}
+                                            disabled={disabledA}
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editAddress()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="col-md-8 mb-auto">
-                                <button className="btn btn-primary" onClick={
-                                    () => { toggleInput() }}>Chỉnh sửa
+
+                            <div className="col-md-8 mb-auto mt-2 my-2">
+                                <button className="forms-control mb-2" onClick={
+                                    () => { handleShow() }}>Đổi mật khẩu
+                                </button>
+                                <button className="btn btn-primary formss-control" onClick={
+                                    () => { handleUpdate() }}>Cập nhật thông tin
                                 </button>
                             </div>
+
                         </div>
 
 
@@ -144,9 +293,52 @@ const Account = () => {
 
 
 
+            <Modal show={show} onHide={handleClose} className="container-fluid mt-5">
+                <Modal.Header >
+                    <Modal.Title>Tạo mật khẩu mới
+                    </Modal.Title>
 
+                </Modal.Header>
+                <Modal.Body >
+                    <Form.Floating className="mb-3">
+                        <label htmlFor="floatingInputCustom" className="font-weight-semi-bold h6">Nhập mật khẩu hiện tại</label>
+                        <Form.Control
+                            className="forms-control ml-1 mt-2"
+                            id="floatingInputCustom"
+                            type="password"
+                            placeholder="Nhập mật khẩu hiện tạo của bạn"
+                            value={password} onChange={(e) => setPassWord(e.target.value)}
+                        />
+
+                    </Form.Floating>
+                    <Form.Floating>
+                        <label htmlFor="floatingPasswordCustom" className="font-weight-semi-bold h6">Tạo mật khẩu mới</label>
+                        <Form.Control
+                            className="forms-control ml-1 mt-2"
+                            id="floatingPasswordCustom"
+                            type="password"
+                            placeholder="Nhập mật khẩu mới của bạn"
+                            value={passwordNew} onChange={(e) => setPassWordNew(e.target.value)}
+                        />
+                        <p className="text-red">Mật khẩu phải nhiều hơn 8 ký tự, ít nhất 1 chữ thường 1 chữ in hoa, 1 chữ số, 1 ký tự đặc biệt</p>
+                        <Form.Control
+                            className="forms-control ml-1 mt-2"
+                            id="floatingPasswordCustom"
+                            type="password"
+                            placeholder="Xác nhận lại mật khẩu"
+                            value={passwordS} onChange={(e) => setPassWordS(e.target.value)}
+                        />
+                    </Form.Floating>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary formss-control" onClick={
+                        () => { handleChangePassWord() }}>Xác nhận
+                    </button>
+                </Modal.Footer>
+            </Modal>
 
         </Fragment>
+
     )
 }
 export default Account

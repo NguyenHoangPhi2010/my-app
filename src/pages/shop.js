@@ -85,6 +85,9 @@ function Shop() {
       setCheckedBrands(updatedBrands);
     }
   };
+  const handlePase = () => {
+    setPage(1)
+  }
   const handleAddtoCart = (id) => {
     const token = sessionStorage.getItem('token')
     console.log('token', token)
@@ -145,10 +148,10 @@ function Shop() {
           <div className="text-center py-4">
             <Link className="h6 text-uppercase" to={`../detail/${item.id}`}> {item.name}</Link>
             <div className="d-flex align-items-center justify-content-center mt-2">
-              <h7 className="text-muted ml-2">{VND.format(item.price)}</h7>
-              {/* <h9 className="text-muted ml-2">
-                <del>{item.price}VNĐ</del>
-              </h9> */}
+              <h6>{VND.format((item.price - (item.productPromotion.percent * item.price) / 100))}</h6>
+              <h7 className="text-muted ml-2">
+                <del>{VND.format(item.price)}</del>
+              </h7>
             </div>
             <div className="d-flex align-items-center justify-content-center mb-1">
               <small className="fa fa-star text-primary mr-1" />
@@ -205,6 +208,7 @@ function Shop() {
                         value={brand}
                         checked={checkedBrands.includes(brand)}
                         onChange={handleBrandCheckboxChange}
+                        onClick={() => handlePase()}
                       />
                       <label key={brand} className="custom-control-label" htmlFor={brand}>
                         {brand}

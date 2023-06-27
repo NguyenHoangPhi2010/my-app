@@ -4393,6 +4393,17 @@ input[type="button"].btn-block {
   background-clip: border-box;
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
+.cards {
+  position: relative;
+  display: flex;
+  
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
 
 .card > hr {
   margin-right: 0;
@@ -5434,6 +5445,7 @@ a.close.disabled {
 }
 
 .modal-dialog-scrollable .modal-content {
+  
   max-height: calc(100vh - 1rem);
   overflow: hidden;
 }
@@ -5478,7 +5490,7 @@ a.close.disabled {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: max-content;
   pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
@@ -9523,7 +9535,14 @@ a.text-dark:hover, a.text-dark:focus {
 .btn.btn-primary {
   color: #3D464D !important;
 }
-
+.btn.btn-icon{
+  display: block;
+  background-color: transparent; 
+  border: none;
+  cursor: pointer;
+  padding: 0px 10px;
+  margin-left: -40px;
+}
 .btn-square {
   width: 40px;
   height: 40px;
@@ -11251,6 +11270,21 @@ span.total-pro {
   border-radius: 0.5rem;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
+.formss-control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4rem;
+  color: #495057;
+  background-color: #FFD333;
+  background-clip: padding-box;
+  border: 1px solid #d2d6da;
+  appearance: none;
+  border-radius: 0.5rem;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .forms-control {
@@ -12093,6 +12127,146 @@ textarea.forms-control.is-invalid {
 }
 .sidebar-menu .category-sub {
   padding-left: 10px;
+}
+.css-1dh5hfe {
+  margin: 0px;
+  border-style: none;
+  border-width: 1px;
+  border-color: unset;
+  opacity: 1;
+  color: rgb(12, 50, 219);
+  font-weight: 400;
+  text-decoration: unset;
+  font-size: 13px;
+  line-height: 20px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: unset;
+  max-width: unset;
+  min-width: unset;
+  transition: color 0.3s ease 0s;
+  cursor: pointer;
+  text-align: center;
+  padding: 1.5rem;
+}
+.css-ftpi71 {
+  position: relative;
+  display: flex;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  align-items: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  height: 3.5rem;
+  background-color: unset;
+}
+.css-1h28ttq {
+  max-height: max-content;
+  overflow: hidden;
+  position: relative;
+  padding: 0px 1rem;
+}
+.css-1i3ajxp {
+  max-height: max-content;
+  display: flex;
+  padding: 12px 16px;
+}
+.css-1i3ajxp:nth-of-type(2n) {
+  background-color: rgb(246, 246, 246);
+}
+.css-10afzby {
+  text-align: left;
+  margin: 0px;
+  border-style: none;
+  border-width: 1px;
+  border-color: unset;
+  opacity: 1;
+  padding: 0.75rem 1rem;
+  color: rgb(228, 20, 20);
+  font-weight: 700;
+  text-decoration: unset;
+  font-size: 13px;
+  line-height: 20px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: unset;
+  max-width: unset;
+  min-width: unset;
+  transition: color 0.3s ease 0s;
+}
+.css-7v0pfb {
+  text-align: justify;
+  font-weight: bold;
+  margin: 0px;
+  padding: 0px;
+  border-style: none;
+  border-width: 1px;
+  border-color: unset;
+  opacity: 1;
+  color: inherit;
+  font-weight: 400;
+  text-decoration: unset;
+  font-size: 13px;
+  line-height: 20px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: unset;
+  max-width: unset;
+  min-width: unset;
+  transition: color 0.3s ease 0s;
+  flex: 2 1 0%;
+}
+.css-1h28ttq::after {
+  content: "";
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  background: linear-gradient(
+    0deg,
+    rgb(254, 254, 255) 0%,
+    rgba(255, 255, 255, 0.6) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  color: #092ee8;
+}
+.css-gr7r8o.teko-col-4 {
+  display: block;
+  flex: 0 0 33.33%;
+  max-width: 33.33%;
+}
+.css-gr7r8o.teko-col {
+  position: relative;
+  max-width: 100%;
+  min-height: 1px;
+}
+.css-gr7r8o {
+  border-style: none;
+  border-width: 1px;
+  border-color: unset;
+  opacity: 1;
+}
+.css-1x5ixzd {
+  font-weight: bold;
+  font-size: large;
+}
+.css-1ilwpbr {
+  background-color: rgba(232, 230, 230, 0.853);
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  border-radius: 0.5rem;
+  max-height: 90%;
+  position: relative;
+  overflow-y: auto;
+}
+.css-4grbqd {
+  padding: 1rem;
+  text-align: center;
 }
 .back-to-top {
   position: fixed;

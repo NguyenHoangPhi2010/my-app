@@ -3,15 +3,26 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import axios from "axios";
 import Jquery from "../components/Jquery";
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { type } from "@testing-library/user-event/dist/type";
 function Detail() {
     const [quantity, setQuantity] = useState('1');
     const params = useParams();
     const [data, setData] = useState([]);
+    const [typeName, setTypeName] = useState('')
     const quantityAsNumber = Number(quantity);
     const usenavigate = useNavigate();
+    const [showInformation, setShowInformation] = useState(false);
+    const handleCloseInformation = () => setShowInformation(false);
+    const handleShowInformation = () => setShowInformation(true);
+
     useEffect(() => {
         getData();
     }, [])
@@ -27,12 +38,17 @@ function Detail() {
         axios.get(`https://localhost:7225/api/Products/${id}`)
             .then((result) => {
                 setData(result.data)
+                setTypeName(result.data.productType.name)
+
             })
             .catch((error) => {
                 console.log(error)
             })
 
     }
+    const style = {
+        whiteSpace: 'pre-line'
+    };
     const handleAddtoCart = (item) => {
         const token = sessionStorage.getItem('token');
         if (token === null) {
@@ -205,79 +221,156 @@ function Detail() {
                                         data-toggle="tab"
                                         href="#tab-pane-1"
                                     >
-                                        Description
+                                        Mô tả sản phẩm
                                     </a>
                                     <a
                                         className="nav-item nav-link text-dark"
                                         data-toggle="tab"
                                         href="#tab-pane-2"
                                     >
-                                        Information
+                                        Thông tin chi tiết
                                     </a>
                                     <a
                                         className="nav-item nav-link text-dark"
                                         data-toggle="tab"
                                         href="#tab-pane-3"
                                     >
-                                        Reviews (0)
+                                        Dánh giá (0)
                                     </a>
                                 </div>
                                 <div className="tab-content">
                                     <div className="tab-pane fade show active" id="tab-pane-1">
-                                        <h4 className="mb-3">Product Description</h4>
-                                        {data.description}
+                                        <h4 className="mb-3">Mô tả sản phẩm</h4>
+                                        <div style={style}>{data.description}</div>
                                     </div>
                                     <div className="tab-pane fade" id="tab-pane-2">
-                                        <h4 className="mb-3">Additional Information</h4>
-                                        <p>
-                                            Eos no lorem eirmod diam diam, eos elitr et gubergren diam sea.
-                                            Consetetur vero aliquyam invidunt duo dolores et duo sit. Vero
-                                            diam ea vero et dolore rebum, dolor rebum eirmod consetetur
-                                            invidunt sed sed et, lorem duo et eos elitr, sadipscing kasd
-                                            ipsum rebum diam. Dolore diam stet rebum sed tempor kasd eirmod.
-                                            Takimata kasd ipsum accusam sadipscing, eos dolores sit no ut
-                                            diam consetetur duo justo est, sit sanctus diam tempor aliquyam
-                                            eirmod nonumy rebum dolor accusam, ipsum kasd eos consetetur at
-                                            sit rebum, diam kasd invidunt tempor lorem, ipsum lorem elitr
-                                            sanctus eirmod takimata dolor ea invidunt.
-                                        </p>
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <ul className="list-group list-group-flush">
-                                                    <li className="list-group-item px-0">
-                                                        Sit erat duo lorem duo ea consetetur, et eirmod takimata.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Amet kasd gubergren sit sanctus et lorem eos sadipscing
-                                                        at.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Duo amet accusam eirmod nonumy stet et et stet eirmod.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Takimata ea clita labore amet ipsum erat justo voluptua.
-                                                        Nonumy.
-                                                    </li>
-                                                </ul>
+                                        <div className="teko-col teko-col-4 ">
+                                            <div className="css-ftpi71">
+                                                <div
+                                                    type="title"
+                                                    color="textTitle"
+                                                    className="title css-1x5ixzd h2"
+                                                >
+                                                    Thông tin chi tiết
+                                                </div>
                                             </div>
-                                            <div className="col-md-6">
-                                                <ul className="list-group list-group-flush">
-                                                    <li className="list-group-item px-0">
-                                                        Sit erat duo lorem duo ea consetetur, et eirmod takimata.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Amet kasd gubergren sit sanctus et lorem eos sadipscing
-                                                        at.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Duo amet accusam eirmod nonumy stet et et stet eirmod.
-                                                    </li>
-                                                    <li className="list-group-item px-0">
-                                                        Takimata ea clita labore amet ipsum erat justo voluptua.
-                                                        Nonumy.
-                                                    </li>
-                                                </ul>
+                                            <div className="css-1h28ttq">
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Thương hiệu
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{typeName}</div>
+                                                    </div>
+                                                </div>
+                                                <div type="body" color="textSecondary" className="css-10afzby h3">
+                                                    Thông tin chung
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Tên
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.name}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Giá
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        {VND.format(data.price)}
+                                                    </div>
+                                                </div>
+                                                <div type="body" color="textSecondary" className="css-10afzby">
+                                                    Cấu hình chi tiết
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        CPU
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.cpu}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Chip đồ họa
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.gpu}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        RAM
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.ram}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Lưu trữ
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.hardDrive}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Màn hình
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.screens}</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Cổng kết nối
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.connector}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Kết nối không dây
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.otherUtilities}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Kích thước
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.size}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Pin
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.battery}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="css-1i3ajxp">
+                                                    <div type="body" className="css-7v0pfb">
+                                                        Khối lượng
+                                                    </div>
+                                                    <div type="body" className="css-7v0pfb">
+                                                        <div style={style}>{data.weight}</div>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                        </div>
+                                        <div >
+
                                         </div>
                                     </div>
                                     <div className="tab-pane fade" id="tab-pane-3">
@@ -314,7 +407,7 @@ function Detail() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-md-6">
+                                            {/* <div className="col-md-6">
                                                 <h4 className="mb-4">Leave a review</h4>
                                                 <small>
                                                     Your email address will not be published. Required fields
@@ -357,7 +450,7 @@ function Detail() {
                                                         />
                                                     </div>
                                                 </form>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>

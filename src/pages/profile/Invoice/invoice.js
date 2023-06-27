@@ -11,9 +11,8 @@ import Jquery from "../../../components/Jquery";
 
 function Invoice() {
     const [data, setData] = useState([]);
-
-
     const [datadetail, setDataDetail] = useState([]);
+    const [statusOptions, setStatusOptions] = useState([]);
     useEffect(() => {
         getData();
     }, [])
@@ -35,6 +34,36 @@ function Invoice() {
                 })
         }
 
+    }
+    const renderStatus = (item) => {
+        if (item.status === 1) {
+            return (
+                <b className="text-danger text-sm font-weight-bolder btn-grey">Chờ xác nhận</b>
+
+            )
+
+        }
+        else if (item.status == 2) {
+            return (
+                <div><b b style={{ color: "#F29727" }} className="text-sm font-weight-bolder btn-grey">Đã xác nhận</b></div>
+            )
+        }
+        else if (item.status == 3) {
+            return (
+                <div><b style={{ color: "#F2BE22" }} className="text-sm font-weight-bolder btn-grey">Đang giao</b></div>
+            )
+        }
+        else if (item.status == 4) {
+            return (
+                <div><b style={{ color: "#22A699" }} className="text-sm font-weight-bolder btn-grey">Đã giao</b></div>
+            )
+        }
+        else {
+            return (
+                <div><b className="text-success text-sm font-weight-bolder btn-grey">Hoàn tất</b></div>
+            )
+
+        }
     }
 
     const VND = new Intl.NumberFormat('vi-VN', {
@@ -104,7 +133,7 @@ function Invoice() {
 
                                             <tr key={Index}>
                                                 <td className="align-middle">{item.code}</td>
-                                                <td className="align-middle"><span className="btn-grey">{item.status}</span></td>
+                                                <td className="align-middle">{renderStatus(item)}</td>
                                                 <td className="align-middle text-red">{VND.format(item.total)}</td>
                                                 <td className="align-middle">
 

@@ -10,6 +10,7 @@ function Header() {
     const [search, setSearch] = useState([]);
     const [total, setTotal] = useState(0);
     const [producttype, setProductType] = useState([]);
+    const [count, setCount] = useState(0);
     useEffect(() => {
         getSearch();
     }, [searchQuery])
@@ -30,6 +31,7 @@ function Header() {
             .then((result) => {
                 setData(result.data);
                 setCountCart(result.data.length)
+
             })
             .catch((error) => {
                 console.log();
@@ -198,6 +200,12 @@ function Header() {
             });
         }
     };
+    const handleSighOut = () => {
+        if (window.confirm("Bạn có chắc muốn đăng xuát") === true) {
+            sessionStorage.clear();
+            usenavigate('/')
+        }
+    }
     const handlechecklogin = () => {
         var name = sessionStorage.getItem('username');
         if (name === null) {
@@ -211,14 +219,17 @@ function Header() {
             </div>)
         } else {
             return (<div className="dropdown-menu dropdown-menu-right">
-                <div className="dropdown-item" type="button">
+                <div className="dropdown-item" >
                     Xin chao {name}
                 </div>
                 <Link className="dropdown-item" to={"/myaccount"} type="button">
+                    <h6 className="fa fa-user-circle text-black-50 mr-2 " />
                     Profile
                 </Link>
-                <button className="dropdown-item" type="button">
-                    Sign up
+
+                <button className="dropdown-item" type="button" onClick={() => handleSighOut()}>
+                    <h6 className="fa fa-sign-out text-black-50 mr-2 " />
+                    Sign Out
                 </button>
             </div>)
         }
