@@ -8,6 +8,7 @@ import Jquery from "../../components/Jquery";
 import Menu from "./menu";
 import Invoice from "./Invoice/invoice";
 import Account from "./Account/account";
+import ProductLike from "./productlike";
 
 
 function MyAccount() {
@@ -30,6 +31,9 @@ function MyAccount() {
                                     </Tab.Pane>
                                     <Tab.Pane eventKey="three">
                                         <Account />
+                                    </Tab.Pane>
+                                    <Tab.Pane eventKey="two">
+                                        <ProductLike />
                                     </Tab.Pane>
                                 </Tab.Content>
                             </Col>

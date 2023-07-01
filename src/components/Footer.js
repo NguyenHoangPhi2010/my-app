@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Link } from "react-router-dom";
 function Footer() {
     return (
         <Fragment>
@@ -27,61 +28,41 @@ function Footer() {
                     <div className="col-lg-8 col-md-12">
                         <div className="row">
                             <div className="col-md-4 mb-5">
-                                <h5 className="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                                <h5 className="text-secondary text-uppercase mb-4">Cửa hàng</h5>
                                 <div className="d-flex flex-column justify-content-start">
-                                    <a className="text-secondary mb-2" href="#">
+                                    <Link className="text-secondary mb-2" to={"/"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Home
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
+                                        Trang chủ
+                                    </Link>
+                                    <Link className="text-secondary mb-2" to={"/shop"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Our Shop
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
+                                        Sản phảm
+                                    </Link>
+                                    <Link className="text-secondary mb-2" to={"/cart"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Shop Detail
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
+                                        Giỏ hàng
+                                    </Link>
+                                    <Link className="text-secondary mb-2" to={"/contact"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Shopping Cart
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
-                                        <i className="fa fa-angle-right mr-2" />
-                                        Checkout
-                                    </a>
-                                    <a className="text-secondary" href="#">
-                                        <i className="fa fa-angle-right mr-2" />
-                                        Contact Us
-                                    </a>
+                                        Hổ trợ
+                                    </Link>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-5">
-                                <h5 className="text-secondary text-uppercase mb-4">My Account</h5>
+                                <h5 className="text-secondary text-uppercase mb-4">Tài khoản</h5>
                                 <div className="d-flex flex-column justify-content-start">
-                                    <a className="text-secondary mb-2" href="#">
+                                    <Link className="text-secondary mb-2" to={"/login"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Home
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
+                                        Đăng nhập
+                                    </Link>
+                                    <Link className="text-secondary mb-2" to={"/signup"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Our Shop
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
+                                        Đăng ký
+                                    </Link>
+                                    <Link className="text-secondary mb-2" to={"/myaccount"} href="#">
                                         <i className="fa fa-angle-right mr-2" />
-                                        Shop Detail
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
-                                        <i className="fa fa-angle-right mr-2" />
-                                        Shopping Cart
-                                    </a>
-                                    <a className="text-secondary mb-2" href="#">
-                                        <i className="fa fa-angle-right mr-2" />
-                                        Checkout
-                                    </a>
-                                    <a className="text-secondary" href="#">
-                                        <i className="fa fa-angle-right mr-2" />
-                                        Contact Us
-                                    </a>
+                                        Tài khoản cá nhân
+                                    </Link>
                                 </div>
                             </div>
                             <div className="col-md-4 mb-5">

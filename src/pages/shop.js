@@ -2,14 +2,16 @@ import React, { Fragment, useEffect, useState } from "react";
 import Header from "../components/Header";
 import Jquery from "../components/Jquery";
 import Footer from "../components/Footer";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Pagination from "../components/pagination";
 import ReactPaginate from "react-paginate";
 function Shop() {
+  const params = useParams();
   const [data, setData] = useState([]);
+  const [values, setValues] = useState([])
   const [pageCount, setPageCount] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
@@ -18,20 +20,23 @@ function Shop() {
   const [proCount, setProCount] = useState(0);
   const [loadFromFirstPage, setLoadFromFirstPage] = useState(false);
   const [checkedBrands, setCheckedBrands] = useState([]);
-  const brands = ['ACER', 'ASUS', 'HP', 'LENOVO', 'ROG', 'DELL', 'MSI', 'APPLE'];
+  const [name1, setName] = useState('');
+
   const selectedBrands = checkedBrands.length > 0 ? checkedBrands.join(',') : undefined;
   useEffect(() => {
-
+    fetch("https://localhost:7225/api/admin/ProductTypes").then((data) => data.json()).then((val) => setValues(val))
     async function fetchData() {
+
       try {
+
+        console.log('data', name1)
         await axios
           .get("https://localhost:7225/api/Products/FilteredProducts", {
             params: {
               brands: selectedBrands,
-              // cpus: selectedCPUs,
-              // rams: selectedRams,
               minPrice: minPrice,
               maxPrice: maxPrice,
+              encodednames: name1,
               page: page,
               pageSize: pageSize
             },
@@ -47,21 +52,18 @@ function Shop() {
             }
             if (selectedBrands == null) {
               window.history.pushState(null, null, `?page=${page}`);
+              setName(params.encodednames)
             }
             else {
-              window.history.pushState(null, null, `?brand=${selectedBrands}` + `/` + `?page=${page}`);
+              window.history.pushState(null, null, `?brand=${selectedBrands}` + `/` + `?encodednames=${name1}` + `/` + `?page=${page}`);
             }
-            // const urlParams = new URLSearchParams(window.location.search);
-            // urlParams.set("brand", selectedBrands);
-            // urlParams.set("page", selectedPage);
-            // window.history.pushState(null, null, "?" + urlParams.toString());
           });
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, [selectedBrands, minPrice, maxPrice, page, pageSize], [loadFromFirstPage]);
+  }, [selectedBrands, name1, minPrice, maxPrice, page, pageSize], [loadFromFirstPage]);
   const usenavigate = useNavigate();
   const getData = () => {
     axios.get('https://localhost:7225/api/Products')
@@ -83,6 +85,57 @@ function Shop() {
       // Loại bỏ thương hiệu khỏi mảng đã chọn:
       const updatedBrands = checkedBrands.filter((item) => item !== value);
       setCheckedBrands(updatedBrands);
+    }
+  };
+  const handlePriceCheckboxChange = (event) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      // Thêm thương hiệu mới vào mảng đã chọn:
+      setMinPrice(0);
+      setMaxPrice(10000000)
+    } else {
+      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+      setMaxPrice(200000000)
+    }
+  };
+  const handlePriceCheckboxChange1 = (event) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      // Thêm thương hiệu mới vào mảng đã chọn:
+      setMinPrice(10000000);
+      setMaxPrice(20000000)
+    } else {
+      setMinPrice(0);
+      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+      setMaxPrice(200000000)
+    }
+  };
+  const handlePriceCheckboxChange2 = (event) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      // Thêm thương hiệu mới vào mảng đã chọn:
+      setMinPrice(20000000);
+      setMaxPrice(30000000)
+    } else {
+      setMinPrice(0);
+      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+      setMaxPrice(200000000)
+    }
+  };
+  const handlePriceCheckboxChange3 = (event) => {
+    const isChecked = event.target.checked;
+
+    if (isChecked) {
+      // Thêm thương hiệu mới vào mảng đã chọn:
+      setMinPrice(30000000);
+      setMaxPrice(200000000)
+    } else {
+      setMinPrice(0);
+      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+      setMaxPrice(200000000)
     }
   };
   const handlePase = () => {
@@ -129,7 +182,7 @@ function Shop() {
       <div className="col-lg-3 col-md-4 col-sm-6 pb-1" key={item.id}>
         <div className="product-item bg-light mb-4">
           <div className="product-img position-relative overflow-hidden">
-            <img className="img-fluid w-100" src={`ASSETS/image/${item.image}`} alt="" />
+            <img className="img-fluid w-100" src={`../ASSETS/image/${item.image}`} alt="" />
             <div className="product-action">
               <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item.id)} href="">
                 <i className="fa fa-shopping-cart" />
@@ -176,14 +229,30 @@ function Shop() {
       <>
 
         {/* Shop Start */}
+        {/* Breadcrumb Start */}
+        <div className="container-fluid">
+          <div className="row px-xl-5">
+            <div className="col-12">
+              <nav className="breadcrumb bg-light mb-30">
+                <Link className="breadcrumb-item text-dark" to={"/"}>
+                  Trang chủ
+                </Link>
+                <Link className="breadcrumb-item text-dark" to={"/shop"}>
+                  Sản phẩm
+                </Link>
+              </nav>
+            </div>
+          </div>
+        </div>
+        {/* Breadcrumb End */}
         <div className="container-fluid">
           <div className="row px-xl-5">
             {/* Shop Sidebar Start */}
             <div className="col-lg-3 col-md-4">
               {/* Price Start */}
-              <h5 className="section-title position-relative text-uppercase mb-3">
-                <span className="bg-secondary pr-3">Filter by ProductType</span>
-              </h5>
+              <h6 className="section-title position-relative text-uppercase mb-3">
+                <span className="bg-secondary pr-3">Lọc sản phẩm theo hảng sản xuất</span>
+              </h6>
               <div className="bg-light p-4 mb-30">
                 <form>
                   {/* <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
@@ -198,26 +267,90 @@ function Shop() {
                     </label>
                     <span className="badge border font-weight-normal">1000</span>
                   </div> */}
-                  {brands.map((brand) => (
+                  {values.map((brand) => (
                     <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
 
                       <input
                         type="checkbox"
                         className="custom-control-input"
-                        id={brand}
-                        value={brand}
-                        checked={checkedBrands.includes(brand)}
+                        id={brand.name}
+                        value={brand.name}
+                        checked={checkedBrands.includes(brand.name)}
                         onChange={handleBrandCheckboxChange}
                         onClick={() => handlePase()}
                       />
-                      <label key={brand} className="custom-control-label" htmlFor={brand}>
-                        {brand}
+                      <label key={brand} className="custom-control-label" htmlFor={brand.name}>
+                        {brand.name}
                       </label>
 
 
 
                     </div>
                   ))}
+
+                </form>
+              </div>
+              <h6 className="section-title position-relative text-uppercase mb-3">
+                <span className="bg-secondary pr-3">Lọc sản phẩm theo Giá </span>
+              </h6>
+              <div className="bg-light p-4 mb-30">
+                <form>
+                  <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id={"0-10000000"}
+
+                      onChange={handlePriceCheckboxChange}
+                      onClick={() => handlePase()}
+                    />
+                    <label className="custom-control-label" htmlFor={"0-10000000"}>
+                      {VND.format(0)} -- {VND.format(10000000)}
+                    </label>
+                  </div>
+                  <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id={"10000000-20000000"}
+
+                      onChange={handlePriceCheckboxChange1}
+                      onClick={() => handlePase()}
+                    />
+                    <label className="custom-control-label" htmlFor={"10000000-20000000"}>
+                      {VND.format(10000000)} -- {VND.format(20000000)}
+                    </label>
+                  </div>
+                  <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id={"20000000-30000000"}
+
+                      onChange={handlePriceCheckboxChange2}
+                      onClick={() => handlePase()}
+                    />
+                    <label className="custom-control-label" htmlFor={"20000000-30000000"}>
+                      {VND.format(20000000)} -- {VND.format(30000000)}
+                    </label>
+                  </div>
+                  <div className="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id={"30000000tl"}
+
+                      onChange={handlePriceCheckboxChange3}
+                      onClick={() => handlePase()}
+                    />
+                    <label className="custom-control-label" htmlFor={"30000000tl"}>
+                      {VND.format(30000000)} Trở lên
+                    </label>
+                  </div>
                 </form>
               </div>
               {/* Price End */}
@@ -234,49 +367,28 @@ function Shop() {
                       <button className="btn btn-sm btn-light">
                         <i className="fa fa-th-large" />
                       </button>
-                      <button className="btn btn-sm btn-light ml-2">
-                        <i className="fa fa-bars" />
-                      </button>
+
                     </div>
                     <div className="ml-2">
-                      <div className="btn-group">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-light dropdown-toggle"
-                          data-toggle="dropdown"
-                        >
-                          Sorting
-                        </button>
-                        <div className="dropdown-menu dropdown-menu-right">
-                          <a className="dropdown-item" href="#">
-                            Latest
-                          </a>
-                          <a className="dropdown-item" href="#">
-                            Popularity
-                          </a>
-                          <a className="dropdown-item" href="#">
-                            Best Rating
-                          </a>
-                        </div>
-                      </div>
+
                       <div className="btn-group ml-2">
                         <button
                           type="button"
                           className="btn btn-sm btn-light dropdown-toggle"
                           data-toggle="dropdown"
                         >
-                          Showing
+                          Hiển thị(số lượng)
                         </button>
                         <div className="dropdown-menu dropdown-menu-right">
-                          <a className="dropdown-item" href="#">
+                          <button className="dropdown-item" onClick={() => setPageSize(10)}>
                             10
-                          </a>
-                          <a className="dropdown-item" href="#">
+                          </button>
+                          <button className="dropdown-item" onClick={() => setPageSize(20)}>
                             20
-                          </a>
-                          <a className="dropdown-item" href="#">
+                          </button>
+                          <button className="dropdown-item" onClick={() => setPageSize(30)}>
                             30
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </div>

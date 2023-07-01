@@ -40,6 +40,17 @@ function Menu() {
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
+                    <Nav.Link eventKey="two">
+                        <div
+                            className="d-flex align-items-center "
+                            style={{ padding: 5 }}
+                        >
+                            <h2 className="fa fa-heart text-black-50 mr-2 " />
+                            <h5 className="font-weight-semi-bold m-0">Danh sách sản phẩm yêu thích</h5>
+                        </div>
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
                     <Nav.Link eventKey="four">
                         <div
                             className="d-flex align-items-center "

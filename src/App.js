@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Index from "./pages/index";
 import Shop from "./pages/shop";
 import Contact from "./pages/contact";
@@ -19,6 +19,7 @@ import Footer from "./components/Footer";
 import Account from "./pages/profile/Account/account";
 import { ToastContainer } from "react-bootstrap";
 import 'react-toastify/dist/ReactToastify.css';
+import SignUp from "./pages/signup";
 function App() {
   const UserLayout = () => (
     <div>
@@ -38,19 +39,23 @@ function App() {
           <Route element={<UserLayout />}>
             <Route path='/' element={<Index />} />
             <Route path='/shop' element={<Shop />} />
+            <Route path="/shop/:encodednames" element={<Shop />} />
             <Route path="/detail/:id" element={<Detail />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/checkout' element={<Checkout />} />
             <Route path='/contact' element={<Contact />} />
             <Route path='/product' element={<Productad />} />
             <Route path='/producttype' element={<ProductTypead />} />
-            <Route path='/login' element={<Login />} />
+
             <Route path='/profile' element={<Profile />} />
             <Route path='/myaccount' element={<MyAccount />} />
             <Route path='/invoice' element={<Invoice />} />
             <Route path='/invoicedetail/:id' element={<InvoiceDetails />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/signup' element={<SignUp />} />
             <Route path='/account' element={<Account />} />
           </Route>
+
         </Routes>
 
       </Router>

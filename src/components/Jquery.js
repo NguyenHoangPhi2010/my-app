@@ -40,7 +40,7 @@ function Jquery() {
             });
 
             // Vendor carousel
-            $('.vendor-carousel').owlCarousel({
+            $('.vendor-carousel').on("owlCarousel", {
                 loop: true,
                 margin: 29,
                 nav: false,
@@ -67,7 +67,7 @@ function Jquery() {
 
 
             // Related carousel
-            $('.related-carousel').owlCarousel({
+            $('.related-carousel').on("owlCarousel", {
                 loop: true,
                 margin: 29,
                 nav: false,

@@ -1,17 +1,21 @@
 import React, { Fragment, useEffect, useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ClipLoader } from 'react-spinners';
 function Index() {
     const [datahot, setDataHot] = useState([]);
     const [datanew, setDataNew] = useState([]);
+    const [datalike, setDataLike] = useState([]);
+    const [count, setCount] = useState(0);
+
     useEffect(() => {
         getDataHot();
         getDataNew();
+        setDataLike();
+        setCount(0)
     }, [])
     const usenavigate = useNavigate();
     const getDataHot = () => {
@@ -32,7 +36,18 @@ function Index() {
                 console.log(error)
             })
     }
+    const getDataLike = () => {
+        axios.get('https://localhost:7225/api/productlikes')
+            .then((result) => {
+                setDataLike(result.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+    const handleLike = (item) => {
 
+    }
     const handleAddtoCart = (item) => {
         const token = sessionStorage.getItem('token')
 
@@ -56,7 +71,35 @@ function Index() {
             })
                 .then(() => {
                     toast.success('Đã thêm một sản phẩm vào giỏ hàng');
+                    setCount(count + 1);
+                }).catch((error) => {
+                    toast.error(error);
+                })
+        }
+    }
+    const handleAddtoLike = (item) => {
+        const token = sessionStorage.getItem('token')
 
+        if (token === null) {
+            toast.error('Please Login');
+            usenavigate('/Login')
+        }
+        else {
+            const url = 'https://localhost:7225/api/productlikes';
+            const data1 = {
+                "accountId": 1,
+                "productId": item.id,
+                "product": null,
+                "status": true
+            }
+            //console.log('ok', token)
+            //JSON.parse(sessionStorage.getItem('data')).data1.id;
+            axios.post(url, data1, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then((result) => {
+                    toast.success(result.data.message)
+                    setCount(count + 1);
                 }).catch((error) => {
                     toast.error(error);
                 })
@@ -84,7 +127,7 @@ function Index() {
                             <a className="breadcrumb-item text-dark" href="#">
                                 Shop
                             </a> */}
-                                <span className="breadcrumb-item active">Home</span>
+                                <span className="breadcrumb-item active">Trang chủ</span>
                             </nav>
                         </div>
                     </div>
@@ -116,26 +159,10 @@ function Index() {
                                     >
                                         <img
                                             className="position-absolute w-100 h-100"
-                                            src="ASSETS/img/carousel-1.jpg"
-                                            style={{ objectFit: 'fill' }}
+                                            src="ASSETS/img/3.jpg"
+                                            style={{ objectFit: "contains" }}
                                         />
-                                        <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                            <div className="p-3" style={{ maxWidth: 700 }}>
-                                                <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                    Men Fashion
-                                                </h1>
-                                                <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
-                                                    Lorem rebum magna amet lorem magna erat diam stet. Sadips
-                                                    duo stet amet amet ndiam elitr ipsum diam
-                                                </p>
-                                                <a
-                                                    className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                    href="#"
-                                                >
-                                                    Shop Now
-                                                </a>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <div
                                         className="carousel-item position-relative"
@@ -146,23 +173,7 @@ function Index() {
                                             src="ASSETS/img/carousel-2.jpg"
                                             style={{ objectFit: 'fill' }}
                                         />
-                                        <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                            <div className="p-3" style={{ maxWidth: 700 }}>
-                                                <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                    Women Fashion
-                                                </h1>
-                                                <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
-                                                    Lorem rebum magna amet lorem magna erat diam stet. Sadips
-                                                    duo stet amet amet ndiam elitr ipsum diam
-                                                </p>
-                                                <a
-                                                    className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                    href="#"
-                                                >
-                                                    Shop Now
-                                                </a>
-                                            </div>
-                                        </div>
+
                                     </div>
                                     <div
                                         className="carousel-item position-relative"
@@ -173,23 +184,7 @@ function Index() {
                                             src="ASSETS/img/carousel-3.jpg"
                                             style={{ objectFit: 'fill' }}
                                         />
-                                        <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                            <div className="p-3" style={{ maxWidth: 700 }}>
-                                                <h1 className="display-4 text-white mb-3 animate__animated animate__fadeInDown">
-                                                    Kids Fashion
-                                                </h1>
-                                                <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
-                                                    Lorem rebum magna amet lorem magna erat diam stet. Sadips
-                                                    duo stet amet amet ndiam elitr ipsum diam
-                                                </p>
-                                                <a
-                                                    className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
-                                                    href="#"
-                                                >
-                                                    Shop Now
-                                                </a>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -197,23 +192,23 @@ function Index() {
                         <div className="col-lg-4">
                             <div className="product-offer mb-30" style={{ height: 200 }}>
                                 <img className="img-fluid" src="ASSETS/img/4.jpg" alt="" />
-                                <div className="offer-text">
-                                    <h6 className="text-white text-uppercase">Save 20%</h6>
+                                {/* <div className="offer-text">
+                                    <h6 className="text-white text-uppercase">Save 20%</h4>
                                     <h3 className="text-white mb-3">Special Offer</h3>
                                     <a href="" className="btn btn-primary">
                                         Shop Now
                                     </a>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="product-offer mb-30" style={{ height: 200 }}>
                                 <img className="img-fluid" src="ASSETS/img/5.jpg" alt="" />
-                                <div className="offer-text">
-                                    <h6 className="text-white text-uppercase">Save 20%</h6>
+                                {/* <div className="offer-text">
+                                    <h6 className="text-white text-uppercase">Save 20%</h4>
                                     <h3 className="text-white mb-3">Special Offer</h3>
                                     <a href="" className="btn btn-primary">
                                         Shop Now
                                     </a>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -261,207 +256,7 @@ function Index() {
                     </div>
                 </div>
                 {/* Featured End */}
-                {/* Categories Start */}
-                <div className="container-fluid pt-5">
-                    <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
-                        <span className="bg-secondary pr-3">Categories</span>
-                    </h2>
-                    <div className="row px-xl-5 pb-3">
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-1.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-2.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-3.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-4.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-4.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-3.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-2.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-1.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-2.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-1.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-4.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
-                            <a className="text-decoration-none" href="">
-                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
-                                    <div
-                                        className="overflow-hidden"
-                                        style={{ width: 100, height: 100 }}
-                                    >
-                                        <img className="img-fluid" src="ASSETS/img/cat-3.jpg" alt="" />
-                                    </div>
-                                    <div className="flex-fill pl-3">
-                                        <h6>Category Name</h6>
-                                        <small className="text-body">100 Products</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {/* Categories End */}
+
                 {/* Products Start */}
                 <div className="container-fluid pt-5 pb-3">
                     <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
@@ -480,15 +275,15 @@ function Index() {
                                                     <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item)} href="">
                                                         <i className="fa fa-shopping-cart" />
                                                     </Link>
-                                                    <a className="btn btn-outline-dark btn-square" href="">
+                                                    <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoLike(item)}>
                                                         <i className="far fa-heart" />
-                                                    </a>
+                                                    </Link>
                                                     <a className="btn btn-outline-dark btn-square" href="">
                                                         <i className="fa fa-sync-alt" />
                                                     </a>
-                                                    <a className="btn btn-outline-dark btn-square" href="">
+                                                    <Link className="btn btn-outline-dark btn-square" to={`../detail/${item.id}`} href="">
                                                         <i className="fa fa-search" />
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             </div>
                                             <div className="text-center py-4">
@@ -522,7 +317,7 @@ function Index() {
                     <div className="row px-xl-5">
                         <div className="col-md-6">
                             <div className="product-offer mb-30" style={{ height: 300 }}>
-                                <img className="img-fluid" src="ASSETS/img/offer-1.jpg" alt="" />
+                                <img className="img-fluid" src="ASSETS/img/4.jpg" alt="" />
                                 <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h6>
                                     <h3 className="text-white mb-3">Special Offer</h3>
@@ -534,7 +329,7 @@ function Index() {
                         </div>
                         <div className="col-md-6">
                             <div className="product-offer mb-30" style={{ height: 300 }}>
-                                <img className="img-fluid" src="ASSETS/img/offer-2.jpg" alt="" />
+                                <img className="img-fluid" src="ASSETS/img/5.jpg" alt="" />
                                 <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h6>
                                     <h3 className="text-white mb-3">Special Offer</h3>
@@ -565,15 +360,15 @@ function Index() {
                                                     <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item)} href="">
                                                         <i className="fa fa-shopping-cart" />
                                                     </Link>
-                                                    <a className="btn btn-outline-dark btn-square" href="">
+                                                    <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoLike(item)}>
                                                         <i className="far fa-heart" />
-                                                    </a>
+                                                    </Link>
                                                     <a className="btn btn-outline-dark btn-square" href="">
                                                         <i className="fa fa-sync-alt" />
                                                     </a>
-                                                    <a className="btn btn-outline-dark btn-square" href="">
+                                                    <Link className="btn btn-outline-dark btn-square" to={`../detail/${item.id}`} href="">
                                                         <i className="fa fa-search" />
-                                                    </a>
+                                                    </Link>
                                                 </div>
                                             </div>
                                             <div className="text-center py-4">
@@ -603,6 +398,145 @@ function Index() {
                     </div>
                 </div>
                 {/* Products End */}
+                {/* Categories Start */}
+                <div className="container-fluid pt-5">
+                    <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
+                        <span className="bg-secondary pr-3">Hảng sản xuất</span>
+                    </h2>
+                    <div className="row px-xl-5 pb-3">
+
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/acer.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>ACER</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/asus.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>ASUS</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/apple.png" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>APPLE</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/dell.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>DELL</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/hp.jpeg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>HP</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/lenovo.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>LENOVO</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/msi.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>MSI</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div className="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <a className="text-decoration-none" href="">
+                                <div className="cat-item img-zoom d-flex align-items-center mb-4">
+                                    <div
+                                        className="overflow-hidden"
+                                        style={{ width: 100, height: 100 }}
+                                    >
+                                        <img className="img-fluid" src="ASSETS/img/rog.jpg" alt="" style={{ width: 100, height: 100 }} />
+                                    </div>
+                                    <div className="flex-fill pl-3">
+                                        <h4>ROG</h4>
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                {/* Categories End */}
                 {/* Vendor Start */}
                 <div className="container-fluid py-5">
                     <div className="row px-xl-5">

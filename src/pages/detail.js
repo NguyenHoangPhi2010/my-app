@@ -91,7 +91,23 @@ function Detail() {
             <Jquery />
             <>
 
-
+                {/* Breadcrumb Start */}
+                <div className="container-fluid">
+                    <div className="row px-xl-5">
+                        <div className="col-12">
+                            <nav className="breadcrumb bg-light mb-30">
+                                <Link className="breadcrumb-item text-dark" to={"/"}>
+                                    Trang chủ
+                                </Link>
+                                <Link className="breadcrumb-item text-dark" to={"/shop"}>
+                                    Sản phẩm
+                                </Link>
+                                <span className="breadcrumb-item active">{data.sku}</span>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                {/* Breadcrumb End */}
                 {/* Shop Detail Start */}
 
                 <div className="container-fluid pb-5">
@@ -407,7 +423,7 @@ function Detail() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/* <div className="col-md-6">
+                                            <div className="col-md-6">
                                                 <h4 className="mb-4">Leave a review</h4>
                                                 <small>
                                                     Your email address will not be published. Required fields
@@ -434,14 +450,14 @@ function Detail() {
                                                             defaultValue={""}
                                                         />
                                                     </div>
-                                                    <div className="form-group">
+                                                    {/* <div className="form-group">
                                                         <label htmlFor="name">Your Name *</label>
                                                         <input type="text" className="form-control" id="name" />
                                                     </div>
                                                     <div className="form-group">
                                                         <label htmlFor="email">Your Email *</label>
                                                         <input type="email" className="form-control" id="email" />
-                                                    </div>
+                                                    </div> */}
                                                     <div className="form-group mb-0">
                                                         <input
                                                             type="submit"
@@ -450,7 +466,7 @@ function Detail() {
                                                         />
                                                     </div>
                                                 </form>
-                                            </div> */}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

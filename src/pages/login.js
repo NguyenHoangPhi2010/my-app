@@ -103,7 +103,7 @@ const Login = () => {
             <Jquery />
             <>
 
-                <div className="row">
+                {/* <div className="row">
                     <div className="offset-lg-3 col-lg-6" style={{ marginTop: '100px' }}>
                         <form onSubmit={ProceedLoginusingAPI} className="container">
                             <div className="card">
@@ -127,8 +127,41 @@ const Login = () => {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div> */}
+                <div >
+                    <div className="main-container">
 
+                        <div className="header-w3l">
+                            <h1>Đăng Nhập Tại Đây</h1>
+                        </div>
+
+
+                        <div className="main-content-agile">
+                            <div className="w3ls-pro">
+                                <h2>Đăng Nhập</h2>
+
+                            </div>
+                            <div className="sub-main-w3ls">
+                                <form onSubmit={ProceedLoginusingAPI} className="container">
+                                    <div className="form-group">
+                                        <label className="text-left">Tài khoản </label>
+                                        <input value={username} onChange={e => usernameupdate(e.target.value)} className="form-control"></input>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="text-left">Mật khẩu </label>
+                                        <input type="password" value={password} onChange={e => passwordupdate(e.target.value)} className="form-control"></input>
+                                    </div>
+
+
+                                    <div className="w3ls-pro">
+                                        <input type="submit" value="" />
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </>
         </Fragment>
     );

@@ -1,22 +1,27 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
-import axios from "../Services/customize-axios";
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
+import Index from "../pages";
 function Header() {
     const [data, setData] = useState([]);
+    const [datalike, setDataLike] = useState([]);
     const [countcart, setCountCart] = useState(0)
+    const [countLike, setCountLike] = useState(0)
     const [searchQuery, setSearchQuery] = useState(null);
     const [search, setSearch] = useState([]);
     const [total, setTotal] = useState(0);
     const [producttype, setProductType] = useState([]);
     const [count, setCount] = useState(0);
+    const [page, setPage] = useState(1);
     useEffect(() => {
         getSearch();
     }, [searchQuery])
 
     useEffect(() => {
         getData();
+        getDataLike();
     }, [])
     useEffect(() => {
         getProductType();
@@ -25,18 +30,28 @@ function Header() {
     const usenavigate = useNavigate();
     const token = sessionStorage.getItem('token')
     const getData = () => {
-        axios.get('/api/Carts', {
+        const token = sessionStorage.getItem('token')
+        axios.get('https://localhost:7225/api/Carts', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then((result) => {
                 setData(result.data);
                 setCountCart(result.data.length)
-
             })
             .catch((error) => {
-                console.log();
+                console.log(error);
             })
 
+    }
+    const getDataLike = () => {
+        axios.get('https://localhost:7225/api/productlikes')
+            .then((result) => {
+                setDataLike(result.data)
+                setCountLike(result.data.length)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
     var tong = data.reduce((a, v) => a = a + v.product.price * v.quantity, 0)
     const getProductType = () => {
@@ -101,6 +116,7 @@ function Header() {
                 })
         }
     };
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const result = getSearch(searchQuery);
@@ -213,9 +229,9 @@ function Header() {
                 <Link className="dropdown-item" to={"/login"} type="button">
                     Sign in
                 </Link>
-                <button className="dropdown-item" type="button">
+                <Link className="dropdown-item" to={"/signup"} type="button">
                     Sign up
-                </button>
+                </Link>
             </div>)
         } else {
             return (<div className="dropdown-menu dropdown-menu-right">
@@ -238,7 +254,7 @@ function Header() {
         <Fragment>
             {/* Topbar Start */}
             <div className="container-fluid">
-                <div className="row bg-secondary py-1 px-xl-5">
+                {/* <div className="row bg-secondary py-1 px-xl-5">
                     <div className="col-lg-6 d-none d-lg-block">
                         <div className="d-inline-flex align-items-center h-100">
                             <Link className="text-body mr-2" to="/">About</Link>
@@ -312,7 +328,7 @@ function Header() {
                             </Link>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
                     <div className="col-lg-4">
                         <Link className="text-decoration-none" to="/">
@@ -342,8 +358,8 @@ function Header() {
                                                 className="my-search"
                                                 autoComplete="off"
                                             />
-                                            <button className="bg-transparent text-primary">
-                                                <i className="fa fa-search " />
+                                            <button className="bg-transparent text-primary" >
+                                                <NavLink className="fa fa-search " to={`/shop/${searchQuery}`}></NavLink>
                                             </button>
                                         </form>
                                         <ul className="ht-dropdown search-box-width">
@@ -355,7 +371,7 @@ function Header() {
                                                                 <div className="cart-img">
                                                                     <a href="/#">
                                                                         <img
-                                                                            src={`ASSETS/image/${item.image}`}
+                                                                            src={`../ASSETS/image/${item.image}`}
                                                                             alt="cart-image"
                                                                         />
                                                                     </a>
@@ -447,7 +463,7 @@ function Header() {
                                     <Link className="nav-item nav-link" to="/">Trang chủ</Link>
                                     <Link className="nav-item nav-link" to="/shop">Sản phẩm</Link>
                                     <Link className="nav-item nav-link" to="/cart">Giỏ hàng</Link>
-                                    <Link className="nav-item nav-link" to="/contact">Contact</Link>
+                                    <Link className="nav-item nav-link" to="/contact">Hổ trợ</Link>
 
 
                                 </div>
@@ -475,7 +491,7 @@ function Header() {
                                                                         <div className="cart-img">
                                                                             <a href="/#">
                                                                                 <img
-                                                                                    src={`ASSETS/image/${item.product.image}`}
+                                                                                    src={`../ASSETS/image/${item.product.image}`}
                                                                                     alt="cart-image"
                                                                                 />
                                                                             </a>
@@ -532,7 +548,7 @@ function Header() {
                                             className="badge text-secondary border border-secondary rounded-circle"
                                             style={{ paddingBottom: 2 }}
                                         >
-                                            0
+                                            {countLike}
                                         </span>
                                     </a>
 

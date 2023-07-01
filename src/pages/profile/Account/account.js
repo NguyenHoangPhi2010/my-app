@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import * as Yup from 'yup';
 import { Modal } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Form } from "react-bootstrap";
-import { FormFloating, FloatingLabel } from "react-bootstrap";
+
 const Account = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => { setShow(false); }
@@ -80,57 +80,84 @@ const Account = () => {
 
     }
     var tong = datainvoice.reduce((a, v) => a = a + v.total, 0)
-    const handleUpdate = () => {
-        const url = `https://localhost:7225/api/Accounts/${editID}`;
-        const data1 = {
-            "address": address,
-            "fullName": fullname,
-            "avatar": data.avatar,
-            "status": data.status,
-            "id": editID,
-            "userName": data.userName,
-            "normalizedUserName": data.normalizedUserName,
-            "email": email,
-            "normalizedEmail": email.toUpperCase(),
-            "emailConfirmed": false,
-            "passwordHash": data.papasswordHash,
-            "securityStamp": data.securityStamp,
-            "concurrencyStamp": data.concurrencyStamp,
-            "phoneNumber": phone,
-            "phoneNumberConfirmed": false,
-            "twoFactorEnabled": false,
-            "lockoutEnd": null,
-            "lockoutEnabled": true,
-            "accessFailedCount": 0
+    const passwordSchema = Yup.string()
+        .required('Mật khẩu không được để tróng')
+        .min(8, 'Mật khẩu phải dài ít nhất 8 ký tự')
+        .matches(
+            /^(?=.*\d)(?=.*[!@#$%?*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%?*]{8,}$/,
+            "Mật khẩu phải nhiều hơn 8 ký tự, ít nhất 1 chữ thường 1 chữ in hoa, 1 chữ số, 1 ký tự đặc biệt"
+        );
+    const Schema = Yup.object().shape({
+        phone: Yup.string()
+            .matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ')
+            .required('Số điện thoại không được để trống'),
+        email: Yup.string()
+            .required('Email không được để trống')
+            .email('Invalid email address'),
+        address: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+        fullname: Yup.string()
+            .required('Họ và tên(đầy đủ) không được để trống')
+            .max(50, 'Họ và tên(đầy đủ) quá dài'),
+
+    });
+    const handleUpdate = async () => {
+
+        try {
+            await Schema.validate({ phone, email, address, fullname }, { abortEarly: false });
+            const url = `https://localhost:7225/api/Accounts/${editID}`;
+            const data1 = {
+                "address": address,
+                "fullName": fullname,
+                "avatar": data.avatar,
+                "status": data.status,
+                "id": editID,
+                "userName": data.userName,
+                "normalizedUserName": data.normalizedUserName,
+                "email": email,
+                "normalizedEmail": email.toUpperCase(),
+                "emailConfirmed": false,
+                "passwordHash": data.papasswordHash,
+                "securityStamp": data.securityStamp,
+                "concurrencyStamp": data.concurrencyStamp,
+                "phoneNumber": phone,
+                "phoneNumberConfirmed": false,
+                "twoFactorEnabled": false,
+                "lockoutEnd": null,
+                "lockoutEnabled": true,
+                "accessFailedCount": 0
+            }
+            axios.put(url, data1)
+                .then((result) => {
+                    getData();
+                    setDisabledE(true);
+                    setDisabledA(true);
+                    setDisabledFN(true);
+                    setDisabledP(true)
+                    toast.success('Đã thay đổi thành công');
+                }).catch((error) => {
+                    toast.error(error);
+                })
+
+        } catch (err) {
+            const validationErrors = err.inner;
+            validationErrors.forEach((error) => {
+                toast.error(error.message);
+            });
         }
-        axios.put(url, data1)
-            .then((result) => {
-                getData();
-                setDisabledE(true);
-                setDisabledA(true);
-                setDisabledFN(true);
-                setDisabledP(true)
-                toast.success('Đã thay đổi thành công');
-            }).catch((error) => {
-                toast.error(error);
-            })
+
     }
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
     });
-    const passwordSchema = Yup.string()
-        .required('Password is required')
-        .min(8, 'Password must be at least 8 characters long')
-        .matches(
-            /^(?=.*\d)(?=.*[!@#$%?*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%?*]{8,}$/,
-            "Mật khẩu phải nhiều hơn 8 ký tự, ít nhất 1 chữ thường 1 chữ in hoa, 1 chữ số, 1 ký tự đặc biệt"
-        );
+
     const handleChangePassWord = async () => {
         try {
-            await passwordSchema.validate(passwordNew);
-            await passwordSchema.validate(passwordS);
-            if (passwordNew != passwordS) {
+            await passwordSchema.validate(passwordNew, { abortEarly: false });
+            await passwordSchema.validate(passwordS, { abortEarly: false });
+
+            if (passwordNew !== passwordS) {
                 toast.error('Mật khẩu mới và mật khẩu xác nhận không trùng khớp');
             } else {
                 const url = 'https://localhost:7225/api/Accounts/ChangePassword'
@@ -149,7 +176,10 @@ const Account = () => {
             }
             toast.success('Đã thay đổi thành công');
         } catch (err) {
-            toast.error('Mật khẩu không phù hợp');
+            const validationErrors = err.inner;
+            validationErrors.forEach((error) => {
+                toast.error(error.message);
+            });
         }
 
 
@@ -164,7 +194,7 @@ const Account = () => {
                         <h5 style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
                         <div className="row  mb-41">
                             <div className=" col-md-8 mb-auto">
-                                <div className="form-group">
+                                <div className="forms-group">
                                     <label
                                         htmlFor="example-text-input"
                                         className="forms-control-label"
@@ -174,7 +204,7 @@ const Account = () => {
                                     <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
                                         <input
                                             className="forms-control input-lg"
-                                            type="text" placeholder="Nhập Mã sản phẩm"
+                                            placeholder="Nhập họ và tên"
                                             value={fullname} onChange={(e) => {
                                                 setFullName(e.target.value);
                                             }}
@@ -199,7 +229,7 @@ const Account = () => {
                                     <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
                                         <input
                                             className="forms-control"
-                                            placeholder="Nhập thông tin của GPU"
+                                            placeholder="Nhập số điện thoại"
                                             value={phone} onChange={(e) => setPhone(e.target.value)}
                                             disabled={disabledP}
                                         />
