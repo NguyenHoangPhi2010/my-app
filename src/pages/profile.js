@@ -19,8 +19,33 @@ function Profile() {
             <Jquery />
             <>
 
-                <h5>Đơn hàng đang chờ xác nhận vui lòng đợi!!!!</h5>
 
+                <div className="position-relative"
+                    style={{ height: 450 }}>
+                    <div className="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                        <div className="p-3" style={{ maxWidth: 700 }}>
+                            <h1 className="fa fa-check-circle text-success mb-3 animate__animated animate__fadeInDown" style={{ size: 700 }}></h1>
+                            <h1 className="text-white mb-3 animate__animated animate__fadeInDown">
+                                Đặt hàng thành công
+                            </h1>
+                            <p className="mx-md-4 px-5 animate__animated animate__bounceIn">
+                                Đơn hàng đang chờ xác nhận Nhấp vào Kiểm tra để xem thông tin thêm!!!
+                            </p>
+                            <Link
+                                className="btn btn-outline-light py-2 px-4 mt-3 mr-5 animate__animated animate__fadeInUp"
+                                to={"/"}
+                            >
+                                Trang chủ
+                            </Link>
+                            <Link
+                                className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"
+                                to={"/myaccount"}
+                            >
+                                kiểm tra
+                            </Link>
+                        </div>
+                    </div>
+                </div>
             </>
 
         </Fragment>

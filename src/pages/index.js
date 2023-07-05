@@ -5,6 +5,8 @@ import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ClipLoader } from 'react-spinners';
+import ReactStars from 'react-rating-star-with-type'
+
 function Index() {
     const [datahot, setDataHot] = useState([]);
     const [datanew, setDataNew] = useState([]);
@@ -14,9 +16,9 @@ function Index() {
     useEffect(() => {
         getDataHot();
         getDataNew();
-        setDataLike();
+        getDataLike();
         setCount(0)
-    }, [])
+    }, [count])
     const usenavigate = useNavigate();
     const getDataHot = () => {
         axios.get('https://localhost:7225/api/Home/GetProductHot')
@@ -37,7 +39,10 @@ function Index() {
             })
     }
     const getDataLike = () => {
-        axios.get('https://localhost:7225/api/productlikes')
+        const token = sessionStorage.getItem('token')
+        axios.get('https://localhost:7225/api/productlikes', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
             .then((result) => {
                 setDataLike(result.data)
             })
@@ -45,14 +50,19 @@ function Index() {
                 console.log(error)
             })
     }
-    const handleLike = (item) => {
+    const handleLike = (id) => {
+        return (datalike.map((item) => {
+            if (item.productId === id) {
+                return (<i className="fa fa-heart" />)
+            }
 
+        }))
     }
     const handleAddtoCart = (item) => {
         const token = sessionStorage.getItem('token')
 
         if (token === null) {
-            toast.error('Please Login');
+            toast.error('Vui lòng đăng nhập để sử dụng');
             usenavigate('/Login')
         }
         else {
@@ -81,7 +91,7 @@ function Index() {
         const token = sessionStorage.getItem('token')
 
         if (token === null) {
-            toast.error('Please Login');
+            toast.error('Vui lòng đăng nhập để sử dụng');
             usenavigate('/Login')
         }
         else {
@@ -276,11 +286,9 @@ function Index() {
                                                         <i className="fa fa-shopping-cart" />
                                                     </Link>
                                                     <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoLike(item)}>
-                                                        <i className="far fa-heart" />
+                                                        {handleLike(item.id)}
                                                     </Link>
-                                                    <a className="btn btn-outline-dark btn-square" href="">
-                                                        <i className="fa fa-sync-alt" />
-                                                    </a>
+
                                                     <Link className="btn btn-outline-dark btn-square" to={`../detail/${item.id}`} href="">
                                                         <i className="fa fa-search" />
                                                     </Link>
@@ -295,12 +303,11 @@ function Index() {
                                                     </h6>
                                                 </div>
                                                 <div className="d-flex align-items-center justify-content-center mb-1">
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small>(99)</small>
+                                                    <ReactStars
+                                                        value={item.rating}
+                                                        edit={true}
+                                                        activeColors={["orange", "orange", "orange", "orange", "orange",]}
+                                                    /><small className="pt-1">({item.rating})</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -361,7 +368,8 @@ function Index() {
                                                         <i className="fa fa-shopping-cart" />
                                                     </Link>
                                                     <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoLike(item)}>
-                                                        <i className="far fa-heart" />
+
+                                                        {handleLike(item.id)}
                                                     </Link>
                                                     <a className="btn btn-outline-dark btn-square" href="">
                                                         <i className="fa fa-sync-alt" />
@@ -380,12 +388,11 @@ function Index() {
                                                     </h6>
                                                 </div>
                                                 <div className="d-flex align-items-center justify-content-center mb-1">
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small className="fa fa-star text-primary mr-1" />
-                                                    <small>(99)</small>
+                                                    <ReactStars
+                                                        value={item.rating}
+                                                        edit={true}
+                                                        activeColors={["orange", "orange", "orange", "orange", "orange",]}
+                                                    /><small className="pt-1">({item.rating})</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -538,7 +545,7 @@ function Index() {
                 </div>
                 {/* Categories End */}
                 {/* Vendor Start */}
-                <div className="container-fluid py-5">
+                {/* <div className="container-fluid py-5">
                     <div className="row px-xl-5">
                         <div className="col">
                             <div className="owl-carousel vendor-carousel">
@@ -569,7 +576,7 @@ function Index() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 {/* Vendor End */}
 
             </>

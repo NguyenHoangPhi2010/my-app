@@ -191,7 +191,7 @@ const Account = () => {
 
                 <div className="col-12 ">
                     <div className="card">
-                        <h5 style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
+                        <h5 className="mt-5" style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
                         <div className="row  mb-41">
                             <div className=" col-md-8 mb-auto">
                                 <div className="forms-group">
@@ -327,7 +327,9 @@ const Account = () => {
                 <Modal.Header >
                     <Modal.Title>Tạo mật khẩu mới
                     </Modal.Title>
-
+                    <button className="btn btn-sm btn-danger" onClick={() => handleClose()}>
+                        <i className="fa fa-times" />
+                    </button>
                 </Modal.Header>
                 <Modal.Body >
                     <Form.Floating className="mb-3">

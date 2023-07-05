@@ -68,6 +68,7 @@ const Login = () => {
                     sessionStorage.setItem('username', username);
                     sessionStorage.setItem('token', resp.token);
                     usenavigate('/')
+
                 }
                 // if (Object.keys(resp).length === 0) {
                 //     toast.error('Please Enter valid username');
@@ -153,13 +154,33 @@ const Login = () => {
                                     </div>
 
 
-                                    <div className="w3ls-pro">
-                                        <input type="submit" value="" />
+                                    <div className="text-center mb-5">
+                                        <div className="w3ls-pro">
+                                            <input type="submit" value="" />
 
+                                        </div>
                                     </div>
                                 </form>
+                                <div className="form-check form-check-info text-start">
+
+                                    <label
+                                        className="form-check-label text-left"
+                                        htmlFor="flexCheckDefault"
+                                    >
+                                        Bạn chưa có tài khoản. Tạo tài khoản{" "}
+                                        <a
+                                            href="javascript:;"
+                                            className="text-dark font-weight-bolder"
+                                        >
+                                            <Link to='/signup'>Tại Đây</Link>
+
+                                        </a>
+                                    </label>
+                                </div>
                             </div>
+
                         </div>
+
                     </div>
                 </div>
             </>

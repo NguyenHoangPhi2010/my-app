@@ -1,15 +1,17 @@
 import React, { Fragment, useEffect, useState } from "react";
-
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import Jquery from "../components/Jquery";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function Cart() {
+  const params = useParams();
   const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
   useEffect(() => {
     getData();
-  }, [])
+    setCount(0)
+  }, [params, count])
   const usenavigate = useNavigate();
   const getData = () => {
     const token = sessionStorage.getItem('token')
@@ -21,6 +23,7 @@ function Cart() {
       })
         .then((result) => {
           setData(result.data)
+          setCount(count + 1);
         })
         .catch((error) => {
           console.log(error)
@@ -43,6 +46,7 @@ function Cart() {
     axios.put(url, data)
       .then(() => {
         getData();
+        setCount(count + 1);
       }).catch((error) => {
         toast.error(error);
       })
@@ -61,6 +65,7 @@ function Cart() {
       axios.put(url, data)
         .then(() => {
           getData();
+          setCount(count + 1);
         }).catch((error) => {
           toast.error(error);
         })
@@ -73,6 +78,7 @@ function Cart() {
         .then((result) => {
           toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
           getData();
+          setCount(count + 1);
         })
         .catch((error) => {
           toast.error(error);
@@ -87,13 +93,27 @@ function Cart() {
     }
   }
   var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
-  console.log("ok", tong)
   return (
     <Fragment>
       <ToastContainer />
       <Jquery />
       <>
-
+        {/* Breadcrumb Start */}
+        <div className="container-fluid">
+          <div className="row px-xl-5">
+            <div className="col-12">
+              <nav className="breadcrumb bg-light mb-30">
+                <Link className="breadcrumb-item text-dark" to={"/"}>
+                  Trang chủ
+                </Link>
+                <span className="breadcrumb-item active">
+                  Giỏ hàng
+                </span>
+              </nav>
+            </div>
+          </div>
+        </div>
+        {/* Breadcrumb End */}
         {/* Cart Start */}
         {
 
@@ -106,11 +126,11 @@ function Cart() {
                     <thead className="thead-dark">
                       <tr>
                         <th></th>
-                        <th>Products</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Remove</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng tiền</th>
+                        <th>Xóa</th>
                       </tr>
                     </thead>
                     <tbody className="align-middle">
@@ -178,7 +198,7 @@ function Cart() {
                     </div>
                   </form> */}
                   <h5 className="section-title position-relative text-uppercase mb-3">
-                    <span className="bg-secondary pr-3">TÓM TẮT CART</span>
+                    <span className="bg-secondary pr-3">TÓM TẮT Giỏ hàng</span>
                   </h5>
                   <div className="bg-light p-30 mb-5">
                     <div className="border-bottom pb-2">
@@ -197,7 +217,7 @@ function Cart() {
                         <h5>{VND.format(tong)}</h5>
                       </div>
                       <button className="btn btn-block btn-primary font-weight-bold my-3 py-3" onClick={() => handleCheckOut()}>
-                        Proceed To Checkout
+                        Tiến hành thanh toán
                       </button>
                     </div>
                   </div>
@@ -218,7 +238,7 @@ function Cart() {
 
                   </h1>
                   <p className="mx-md-5 px-5 animate__animated animate__bounceIn">
-                    Giỏ hàng đang tróng nhấp vào mua ngay để mua hàng
+                    Giỏ hàng đang trống nhấp vào mua ngay để mua hàng
                   </p>
                   <Link
                     className="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp"

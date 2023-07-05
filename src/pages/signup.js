@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import * as Yup from 'yup';
 import Jquery from "../components/Jquery";
@@ -82,7 +82,7 @@ function SignUp() {
                 }
 
                 await axios.post(url, form)
-                    .then((result) => {
+                    .then(() => {
                         clear();
                         toast.success('Đã thêm tài khoản');
                         usenavigate('/login');
@@ -240,13 +240,28 @@ function SignUp() {
                                             value={passwordR} onChange={(e) => setpasswordR(e.target.value)}
                                         />
                                     </div>
-                                    <div className="text-center">
+                                    <div className="text-center mb-5">
                                         <div className="w3ls-pro">
                                             <input type="submit" value="" />
 
                                         </div>
                                     </div>
+                                    <div className="form-check form-check-info text-start">
 
+                                        <label
+                                            className="form-check-label text-left"
+                                            htmlFor="flexCheckDefault"
+                                        >
+                                            Bạn đã có tài khoản. Đăng nhập{" "}
+                                            <a
+                                                href="javascript:;"
+                                                className="text-dark font-weight-bolder"
+                                            >
+                                                <Link to='/login'>Tại Đây</Link>
+
+                                            </a>
+                                        </label>
+                                    </div>
                                 </form>
                             </div>
                         </div>

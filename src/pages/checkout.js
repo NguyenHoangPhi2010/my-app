@@ -12,15 +12,42 @@ import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { PayPalButton } from "react-paypal-button-v2";
 function Checkout() {
+    const [userName, setUserName] = useState('')
+    const [fullname, setFullName] = useState('')
+    const [phone, setPhone] = useState('')
+    const [email, setEmail] = useState('')
+    const [address, setAddress] = useState('')
 
+    const [editID, setEditId] = useState('');
     const [shippingAddress, SetshippingAddress] = useState('')
     const [shippingPhone, SetshippingPhone] = useState('')
     const [data, setData] = useState([]);
+    const [datauser, setDataUser] = useState([]);
     const usenavigate = useNavigate();
     useEffect(() => {
         getData();
+        getUser();
     }, [])
+    const getUser = () => {
+        const token = sessionStorage.getItem('token')
+        axios.get('https://localhost:7225/api/Accounts/GetUser', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                setEditId(result.data.id)
+                setDataUser(result.data)
+                setUserName(result.data.userName)
+                setFullName(result.data.fullName)
+                setAddress(result.data.address)
+                setEmail(result.data.email)
+                setPhone(result.data.phoneNumber)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
     const getData = () => {
         const token = sessionStorage.getItem('token')
         if (token == null) {
@@ -114,8 +141,9 @@ function Checkout() {
                 toast.error(error);
             })
     }
-
+    var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
     return (
+
         <Fragment>
             <ToastContainer />
             <Jquery />
@@ -126,7 +154,7 @@ function Checkout() {
                     <div className="row px-xl-5">
                         <div className="col-lg-8">
                             <h5 className="section-title position-relative text-uppercase mb-3">
-                                <span className="bg-secondary pr-3">Billing Address</span>
+                                <span className="bg-secondary pr-3">Địa chỉ thanh toán</span>
                             </h5>
                             <div className="bg-light p-30 mb-5">
                                 <div className="row">
@@ -152,7 +180,7 @@ function Checkout() {
                                             className="form-control"
                                             type="text"
                                             placeholder="Nhập số điện thoại"
-                                            value={shippingPhone} onChange={(e) => SetshippingPhone(e.target.value)}
+                                            value={phone} onChange={(e) => SetshippingPhone(e.target.value)}
                                         />
                                     </div>
                                     <div className="col-md-6 form-group">
@@ -161,7 +189,7 @@ function Checkout() {
                                             className="form-control"
                                             type="text"
                                             placeholder="Nhập Địa chỉ"
-                                            value={shippingAddress} onChange={(e) => SetshippingAddress(e.target.value)}
+                                            value={address} onChange={(e) => SetshippingAddress(e.target.value)}
                                         />
                                     </div>
                                     {/* <div className="col-md-6 form-group">
@@ -319,7 +347,7 @@ function Checkout() {
 
                             <div className="mb-5">
                                 <h5 className="section-title position-relative text-uppercase mb-3">
-                                    <span className="bg-secondary pr-3">Payment</span>
+                                    <span className="bg-secondary pr-3">Phương thức thanh toán</span>
                                 </h5>
                                 <div className="bg-light p-30">
                                     <div className="form-group">
@@ -331,20 +359,7 @@ function Checkout() {
                                                 id="paypal"
                                             />
                                             <label className="custom-control-label" htmlFor="paypal">
-                                                Paypal
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <div className="custom-control custom-radio">
-                                            <input
-                                                type="radio"
-                                                className="custom-control-input"
-                                                name="payment"
-                                                id="directcheck"
-                                            />
-                                            <label className="custom-control-label" htmlFor="directcheck">
-                                                Direct Check
+                                                Thanh toán khi nhận hàng
                                             </label>
                                         </div>
                                     </div>
@@ -357,83 +372,111 @@ function Checkout() {
                                                 id="banktransfer"
                                             />
                                             <label className="custom-control-label" htmlFor="banktransfer">
-                                                Bank Transfer
+                                                Vnpay
                                             </label>
                                         </div>
                                     </div>
                                     <button className="btn btn-block btn-primary font-weight-bold py-3" onClick={() => handleCheckOut()}>
-                                        Place Order
+                                        Đặt hàng
                                     </button>
+
                                 </div>
                             </div>
                         </div>
                         <div className="row px-xl-4">
-                            <h5 className="section-title position-relative text-uppercase mb-3">
-                                <span className="bg-secondary pr-3">
-                                    Review Cart
-                                </span>
-                            </h5>
-                            <table className="table table-light table-borderless table-hover text-center mb-0">
-                                <thead className="thead-dark">
-                                    <tr>
-                                        <th></th>
-                                        <th>Products</th>
-                                        <th>Price</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                        <th>Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="align-middle">
-                                    {
+                            <div className="col-lg-8">
+                                <h5 className="section-title position-relative text-uppercase mb-3">
+                                    <span className="bg-secondary pr-3">
+                                        Xem lại giỏ hàng
+                                    </span>
+                                </h5>
+                                <table className="table table-light table-borderless table-hover text-center mb-0">
+                                    <thead className="thead-dark">
+                                        <tr>
+                                            <th></th>
+                                            <th>Sản phẩm</th>
+                                            <th>Giá</th>
+                                            <th>Số lượng</th>
+                                            <th>Tổng tiền</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="align-middle">
+                                        {
 
-                                        data.map((item, Index) => {
-                                            return (
+                                            data.map((item, Index) => {
+                                                return (
 
-                                                <tr key={Index}>
-                                                    <td className="align-middle">
-                                                        <img src={`../ASSETS/image/${item.product.image}`} alt="" style={{ width: 200 }} />{" "}
+                                                    <tr key={Index}>
+                                                        <td className="align-middle">
+                                                            <img src={`../ASSETS/image/${item.product.image}`} alt="" style={{ width: 200 }} />{" "}
 
-                                                    </td>
-                                                    <td className="align-middle">{item.product.name}</td>
-                                                    <td className="align-middle">{VND.format(item.product.price)}</td>
-                                                    <td className="align-middle">
-                                                        <div
-                                                            className="input-group quantity mx-auto"
-                                                            style={{ width: 100 }}
-                                                        >
-                                                            <div className="input-group-btn">
-                                                                <button className="btn btn-sm btn-primary btn-minus" onClick={() => handleupdatequantityincrease(item)}>
-                                                                    <i className="fa fa-minus" />
-                                                                </button>
+                                                        </td>
+                                                        <td className="align-middle">{item.product.name}</td>
+                                                        <td className="align-middle">{VND.format((item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
+                                                        <td className="align-middle">
+                                                            <div
+                                                                className="input-group quantity mx-auto"
+                                                                style={{ width: 100 }}
+                                                            >
+                                                                <div className="input-group-btn">
+                                                                    <button className="btn btn-sm btn-primary btn-minus" onClick={() => handleupdatequantityincrease(item)}>
+                                                                        <i className="fa fa-minus" />
+                                                                    </button>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control form-control-sm bg-secondary border-0 text-center"
+                                                                    Value={item.quantity}
+                                                                />
+
+                                                                <div className="input-group-btn">
+                                                                    <button className="btn btn-sm btn-primary btn-plus" onClick={() => handleupdatequantitydecrease(item)}>
+                                                                        <i className="fa fa-plus" />
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            <input
-                                                                type="text"
-                                                                className="form-control form-control-sm bg-secondary border-0 text-center"
-                                                                Value={item.quantity}
-                                                            />
+                                                        </td>
+                                                        <td className="align-middle" >{VND.format(item.quantity * (item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
+                                                        <td className="align-middle">
+                                                            <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
+                                                                <i className="fa fa-times" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
 
-                                                            <div className="input-group-btn">
-                                                                <button className="btn btn-sm btn-primary btn-plus" onClick={() => handleupdatequantitydecrease(item)}>
-                                                                    <i className="fa fa-plus" />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td className="align-middle" >{VND.format(item.quantity * item.product.price)}</td>
-                                                    <td className="align-middle">
-                                                        <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
-                                                            <i className="fa fa-times" />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })
+                                        }
 
-                                    }
+                                    </tbody>
 
-                                </tbody>
-                            </table>
+                                </table>
+                            </div>
+                            <div className="col-lg-4">
+                                <h5 className="section-title position-relative text-uppercase mb-3">
+                                    <span className="bg-secondary pr-3">TÓM TẮT Giỏ hàng</span>
+                                </h5>
+                                <div className="bg-light p-30 mb-5">
+                                    <div className="border-bottom pb-2">
+                                        <div className="d-flex justify-content-between mb-3">
+                                            <h6>Tổng tiền phụ</h6>
+                                            <h6>{VND.format(tong)}</h6>
+                                        </div>
+                                        <div className="d-flex justify-content-between">
+                                            <h6 className="font-weight-medium">Phí vận chuyển</h6>
+                                            <h6 className="font-weight-medium">{VND.format(0)}</h6>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2">
+                                        <div className="d-flex justify-content-between mt-2">
+                                            <h5>Tổng tiền</h5>
+                                            <h5>{VND.format(tong)}</h5>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>

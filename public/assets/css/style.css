@@ -4603,7 +4603,7 @@ input[type="button"].btn-block {
   color: #6c757d;
 }
 
-.pagination {
+.paginations {
   display: flex;
   padding-left: 0;
   list-style: none;
@@ -4653,13 +4653,13 @@ input[type="button"].btn-block {
   border-color: #dee2e6;
 }
 
-.pagination-lg .page-link {
+.paginations-lg .page-link {
   padding: 0.75rem 1.5rem;
   font-size: 1.25rem;
   line-height: 1.5;
 }
 
-.pagination-sm .page-link {
+.paginations-sm .page-link {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -6197,7 +6197,7 @@ button.bg-danger:focus {
   background-color: #FFFFFF !important;
 }
 .bg-grey {
-  background-color: #f8f8f8 !important;
+  background-color: #f3f4f6 !important;
 }
 
 a.bg-light:hover, a.bg-light:focus,
@@ -6305,7 +6305,7 @@ button.bg-dark:focus {
 }
 
 .rounded {
-  border-radius: 0.25rem !important;
+  border-radius: 0.5rem !important;
 }
 
 .rounded-top {
@@ -7504,6 +7504,10 @@ button.bg-dark:focus {
 .mr-5,
 .mx-5 {
   margin-right: 3rem !important;
+}
+.mr-6,
+.mx-5 {
+  margin-right: 5rem !important;
 }
 
 .mb-5,
@@ -12275,6 +12279,19 @@ textarea.forms-control.is-invalid {
   bottom: 30px;
   z-index: 11;
   animation: action 1s infinite alternate;
+}
+.actives { 
+  z-index: 3;
+  color: #fff;
+  background-color: #FFD333;
+  border-color: #FFD333;
+}
+.disableds {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: #dee2e6;
 }
 
 @keyframes action {

@@ -20,6 +20,7 @@ import Account from "./pages/profile/Account/account";
 import { ToastContainer } from "react-bootstrap";
 import 'react-toastify/dist/ReactToastify.css';
 import SignUp from "./pages/signup";
+import ProductLike from "./pages/profile/productlike";
 function App() {
   const UserLayout = () => (
     <div>
@@ -49,6 +50,7 @@ function App() {
 
             <Route path='/profile' element={<Profile />} />
             <Route path='/myaccount' element={<MyAccount />} />
+            <Route path='/productlike' element={<ProductLike />} />
             <Route path='/invoice' element={<Invoice />} />
             <Route path='/invoicedetail/:id' element={<InvoiceDetails />} />
             <Route path='/login' element={<Login />} />

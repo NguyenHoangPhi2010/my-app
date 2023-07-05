@@ -1,31 +1,36 @@
-import React, { Component, Fragment, useState, useEffect } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import React, { Fragment, useState, useEffect } from "react";
 import axios from "axios";
 import Jquery from "../components/Jquery";
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { type } from "@testing-library/user-event/dist/type";
+import { Rating } from 'react-simple-star-rating'
+import ReactStars from 'react-rating-star-with-type'
 function Detail() {
     const [quantity, setQuantity] = useState('1');
     const params = useParams();
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(['']);
+    const [dataproductPromotion, setDataPoductPromotion] = useState([]);
+    const [datareview, setDataReview] = useState([]);
+    const [count, setCount] = useState(0);
     const [typeName, setTypeName] = useState('')
     const quantityAsNumber = Number(quantity);
     const usenavigate = useNavigate();
     const [showInformation, setShowInformation] = useState(false);
     const handleCloseInformation = () => setShowInformation(false);
     const handleShowInformation = () => setShowInformation(true);
-
+    const [rating, setRating] = useState(0) // initial rating value
+    const [ratingdetail, setRatingDetail] = useState(0) // initial rating value
+    const [review, setReview] = useState('')
+    // Catch Rating value
     useEffect(() => {
         getData();
-    }, [])
+        getDataReview();
+    }, [count, params])
+    const handleRating = (rate) => {
+        setRating(rate)
+        // Some logic
+    }
     const handquantitydecrease = () => {
         setQuantity(quantityAsNumber - 1)
         if (quantity <= 1) {
@@ -38,8 +43,21 @@ function Detail() {
         axios.get(`https://localhost:7225/api/Products/${id}`)
             .then((result) => {
                 setData(result.data)
+                setDataPoductPromotion(result.data.productPromotion)
                 setTypeName(result.data.productType.name)
+                setRatingDetail(result.data.rating)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
 
+    }
+    console.log(data);
+    const getDataReview = () => {
+        let id = params.id;
+        axios.get(`https://localhost:7225/api/ProductReviews/${id}`)
+            .then((result) => {
+                setDataReview(result.data)
             })
             .catch((error) => {
                 console.log(error)
@@ -74,12 +92,49 @@ function Detail() {
                 })
                     .then(() => {
                         toast.success('Đã thêm sản phẩm vào giỏ hàng');
+
                     }).catch((error) => {
                         toast.error(error);
                     })
             }
         }
 
+    }
+    const clear = () => {
+        setRating(0);
+        setReview('');
+    }
+    const handleReview = (item) => {
+        const token = sessionStorage.getItem('token');
+        if (token === null) {
+            toast.error('Vui lòng đăng nhập');
+            usenavigate('/Login')
+        }
+        else {
+            const url = 'https://localhost:7225/api/ProductReviews';
+            const data1 = {
+                "accountId": 1,
+                "productId": item.id,
+                "product": null,
+                "rating": rating,
+                "comment": review,
+                "issuedDate": "2023-07-01T16:57:31.054Z",
+                "status": true
+            }
+
+
+            axios.post(url, data1, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then((result) => {
+                    toast.warning(result.data.message);
+                    setCount(count + 1);
+                    clear();
+                }).catch((error) => {
+                    toast.error(error);
+                })
+
+        }
     }
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
@@ -171,16 +226,17 @@ function Detail() {
                             <div className="h-100 bg-light p-30">
                                 <h3>{data.name}</h3>
                                 <div className="d-flex mb-3">
-                                    <div className="text-primary mr-2">
-                                        <small className="fas fa-star" />
-                                        <small className="fas fa-star" />
-                                        <small className="fas fa-star" />
-                                        <small className="fas fa-star-half-alt" />
-                                        <small className="far fa-star" />
-                                    </div>
-                                    <small className="pt-1">(99 Reviews)</small>
+
+                                    <ReactStars
+                                        value={ratingdetail}
+                                        edit={true}
+                                        activeColors={["orange", "orange", "orange", "orange", "orange",]}
+                                    />
+
+
+                                    <small className="pt-1">({datareview.length} Reviews)</small>
                                 </div>
-                                <h3 className="font-weight-semi-bold mb-4">{VND.format(data.price)}</h3>
+                                <h3 className="font-weight-semi-bold mb-4">{VND.format((data.price - (dataproductPromotion.percent * data.price) / 100))}</h3>
 
 
                                 <div className="d-flex align-items-center mb-4 pt-2">
@@ -251,7 +307,7 @@ function Detail() {
                                         data-toggle="tab"
                                         href="#tab-pane-3"
                                     >
-                                        Dánh giá (0)
+                                        Dánh giá ({datareview.length})
                                     </a>
                                 </div>
                                 <div className="tab-content">
@@ -389,68 +445,41 @@ function Detail() {
 
                                         </div>
                                     </div>
-                                    <div className="tab-pane fade" id="tab-pane-3">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <h4 className="mb-4">1 review for "Product Name"</h4>
-                                                <div className="media mb-4">
-                                                    <img
-                                                        src="ASSETS/img/user.jpg"
-                                                        alt="Image"
-                                                        className="img-fluid mr-3 mt-1"
-                                                        style={{ width: 45 }}
+                                    <div className="tab-pane fade " id="tab-pane-3">
+                                        <div className="bg-grey rounded-sm p-3 mb-5 ">
+                                            <h5 className="section-title position-relative text-uppercase  mb-3  ">
+                                                <span className="bg-secondary  pr-3">Để lại đánh giá</span>
+                                            </h5>
+                                            <div className="d-flex my-3">
+                                                <p className="mb-0 mr-2">Số sao của bạn của bạn * :</p>
+                                                <div className="text-primary">
+                                                    <Rating
+                                                        onClick={handleRating}
+                                                        ratingValue={rating}
+                                                        size={20}
+                                                        label
+                                                        transition
+                                                        fillColor='orange'
+                                                        emptyColor='gray'
+                                                        className='foo' // Will remove the inline style if applied
                                                     />
-                                                    <div className="media-body">
-                                                        <h6>
-                                                            John Doe
-                                                            <small>
-                                                                {" "}
-                                                                - <i>01 Jan 2045</i>
-                                                            </small>
-                                                        </h6>
-                                                        <div className="text-primary mb-2">
-                                                            <i className="fas fa-star" />
-                                                            <i className="fas fa-star" />
-                                                            <i className="fas fa-star" />
-                                                            <i className="fas fa-star-half-alt" />
-                                                            <i className="far fa-star" />
-                                                        </div>
-                                                        <p>
-                                                            Diam amet duo labore stet elitr ea clita ipsum, tempor
-                                                            labore accusam ipsum et no at. Kasd diam tempor rebum
-                                                            magna dolores sed sed eirmod ipsum.
-                                                        </p>
-                                                    </div>
+                                                    {/* Use rating value */}
+
                                                 </div>
                                             </div>
-                                            <div className="col-md-6">
-                                                <h4 className="mb-4">Leave a review</h4>
-                                                <small>
-                                                    Your email address will not be published. Required fields
-                                                    are marked *
-                                                </small>
-                                                <div className="d-flex my-3">
-                                                    <p className="mb-0 mr-2">Your Rating * :</p>
-                                                    <div className="text-primary">
-                                                        <i className="far fa-star" />
-                                                        <i className="far fa-star" />
-                                                        <i className="far fa-star" />
-                                                        <i className="far fa-star" />
-                                                        <i className="far fa-star" />
-                                                    </div>
+                                            <form>
+                                                <div className="form-group">
+                                                    <label htmlFor="message">Đánh giá của bạn *</label>
+                                                    <textarea
+                                                        id="message"
+                                                        cols={30}
+                                                        rows={5}
+                                                        className="form-control"
+                                                        defaultValue={""}
+                                                        value={review} onChange={(e) => setReview(e.target.value)}
+                                                    />
                                                 </div>
-                                                <form>
-                                                    <div className="form-group">
-                                                        <label htmlFor="message">Your Review *</label>
-                                                        <textarea
-                                                            id="message"
-                                                            cols={30}
-                                                            rows={5}
-                                                            className="form-control"
-                                                            defaultValue={""}
-                                                        />
-                                                    </div>
-                                                    {/* <div className="form-group">
+                                                {/* <div className="form-group">
                                                         <label htmlFor="name">Your Name *</label>
                                                         <input type="text" className="form-control" id="name" />
                                                     </div>
@@ -458,16 +487,69 @@ function Detail() {
                                                         <label htmlFor="email">Your Email *</label>
                                                         <input type="email" className="form-control" id="email" />
                                                     </div> */}
-                                                    <div className="form-group mb-0">
-                                                        <input
-                                                            type="submit"
-                                                            defaultValue="Leave Your Review"
-                                                            className="btn btn-primary px-3"
-                                                        />
-                                                    </div>
-                                                </form>
-                                            </div>
+                                                <div className="form-group  mb-0">
+                                                    <input
+
+                                                        defaultValue="Đánh giá"
+                                                        className="btn btn-primary px-3"
+                                                        onClick={() => handleReview(data)}
+                                                    />
+                                                </div>
+                                            </form>
                                         </div>
+                                        {
+                                            datareview && datareview.length > 0 ?
+                                                datareview.map((item, index) => {
+
+                                                    return (
+                                                        <div className="">
+
+                                                            <div className="">
+
+                                                                <div className="media mb-4">
+                                                                    <img
+                                                                        src={item.applicationUser.avatar}
+                                                                        alt="Image"
+                                                                        className="img-fluid mr-3 mt-1"
+                                                                        style={{ width: 45 }}
+                                                                    />
+                                                                    <div className="media-body">
+                                                                        <h6>
+                                                                            {item.applicationUser.userName}
+                                                                            <small>
+                                                                                {" "}
+                                                                                - <i>{item.issuedDate}</i>
+                                                                            </small>
+                                                                        </h6>
+                                                                        <div className="bg-grey rounded p-2 m-2">
+                                                                            <div className="text-primary mb-2">
+                                                                                <ReactStars
+                                                                                    value={item.rating}
+                                                                                    edit={true}
+                                                                                    activeColors={["orange", "orange", "orange", "orange", "orange",]}
+                                                                                />
+                                                                            </div>
+                                                                            <p>
+                                                                                {item.comment}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    )
+                                                })
+                                                : <div className="row">
+                                                    <h4 className="col-lg-4 ">{datareview.length} đánh giá cho Sản phẩm</h4>
+
+                                                </div>
+
+                                        }
+
+
+
                                     </div>
                                 </div>
                             </div>
@@ -478,209 +560,6 @@ function Detail() {
                 </div>
 
                 {/* Shop Detail End */}
-                {/* Products Start */}
-                <div className="container-fluid py-5">
-                    <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
-                        <span className="bg-secondary pr-3">You May Also Like</span>
-                    </h2>
-                    <div className="row px-xl-5">
-                        <div className="col">
-                            <div className="owl-carousel related-carousel">
-                                <div className="product-item bg-light">
-                                    <div className="product-img position-relative overflow-hidden">
-                                        <img className="img-fluid w-100" src="ASSETS/img/product-1.jpg" alt="" />
-                                        <div className="product-action">
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-shopping-cart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="far fa-heart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-sync-alt" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-search" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="text-center py-4">
-                                        <a className="h6 text-decoration-none text-truncate" href="">
-                                            Product Name Goes Here
-                                        </a>
-                                        <div className="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>$123.00</h5>
-                                            <h6 className="text-muted ml-2">
-                                                <del>$123.00</del>
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-center mb-1">
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small>(99)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="product-item bg-light">
-                                    <div className="product-img position-relative overflow-hidden">
-                                        <img className="img-fluid w-100" src="ASSETS/img/product-2.jpg" alt="" />
-                                        <div className="product-action">
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-shopping-cart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="far fa-heart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-sync-alt" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-search" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="text-center py-4">
-                                        <a className="h6 text-decoration-none text-truncate" href="">
-                                            Product Name Goes Here
-                                        </a>
-                                        <div className="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>$123.00</h5>
-                                            <h6 className="text-muted ml-2">
-                                                <del>$123.00</del>
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-center mb-1">
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small>(99)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="product-item bg-light">
-                                    <div className="product-img position-relative overflow-hidden">
-                                        <img className="img-fluid w-100" src="ASSETS/img/product-3.jpg" alt="" />
-                                        <div className="product-action">
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-shopping-cart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="far fa-heart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-sync-alt" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-search" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="text-center py-4">
-                                        <a className="h6 text-decoration-none text-truncate" href="">
-                                            Product Name Goes Here
-                                        </a>
-                                        <div className="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>$123.00</h5>
-                                            <h6 className="text-muted ml-2">
-                                                <del>$123.00</del>
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-center mb-1">
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small>(99)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="product-item bg-light">
-                                    <div className="product-img position-relative overflow-hidden">
-                                        <img className="img-fluid w-100" src="ASSETS/img/product-4.jpg" alt="" />
-                                        <div className="product-action">
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-shopping-cart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="far fa-heart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-sync-alt" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-search" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="text-center py-4">
-                                        <a className="h6 text-decoration-none text-truncate" href="">
-                                            Product Name Goes Here
-                                        </a>
-                                        <div className="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>$123.00</h5>
-                                            <h6 className="text-muted ml-2">
-                                                <del>$123.00</del>
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-center mb-1">
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small>(99)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="product-item bg-light">
-                                    <div className="product-img position-relative overflow-hidden">
-                                        <img className="img-fluid w-100" src="ASSETS/img/product-5.jpg" alt="" />
-                                        <div className="product-action">
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-shopping-cart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="far fa-heart" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-sync-alt" />
-                                            </a>
-                                            <a className="btn btn-outline-dark btn-square" href="">
-                                                <i className="fa fa-search" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="text-center py-4">
-                                        <a className="h6 text-decoration-none text-truncate" href="">
-                                            Product Name Goes Here
-                                        </a>
-                                        <div className="d-flex align-items-center justify-content-center mt-2">
-                                            <h5>$123.00</h5>
-                                            <h6 className="text-muted ml-2">
-                                                <del>$123.00</del>
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center justify-content-center mb-1">
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small className="fa fa-star text-primary mr-1" />
-                                            <small>(99)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Products End */}
 
             </>
         </Fragment>

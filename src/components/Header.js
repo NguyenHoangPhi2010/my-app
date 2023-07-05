@@ -1,20 +1,19 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import Index from "../pages";
 function Header() {
+    const params = useParams();
     const [data, setData] = useState([]);
     const [datalike, setDataLike] = useState([]);
     const [countcart, setCountCart] = useState(0)
     const [countLike, setCountLike] = useState(0)
     const [searchQuery, setSearchQuery] = useState(null);
     const [search, setSearch] = useState([]);
-    const [total, setTotal] = useState(0);
     const [producttype, setProductType] = useState([]);
-    const [count, setCount] = useState(0);
-    const [page, setPage] = useState(1);
+
     useEffect(() => {
         getSearch();
     }, [searchQuery])
@@ -22,7 +21,8 @@ function Header() {
     useEffect(() => {
         getData();
         getDataLike();
-    }, [])
+        getProductType();
+    }, [params])
     useEffect(() => {
         getProductType();
     }, [])
@@ -44,7 +44,10 @@ function Header() {
 
     }
     const getDataLike = () => {
-        axios.get('https://localhost:7225/api/productlikes')
+        const token = sessionStorage.getItem('token')
+        axios.get('https://localhost:7225/api/productlikes', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
             .then((result) => {
                 setDataLike(result.data)
                 setCountLike(result.data.length)
@@ -53,9 +56,9 @@ function Header() {
                 console.log(error)
             })
     }
-    var tong = data.reduce((a, v) => a = a + v.product.price * v.quantity, 0)
+    var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
     const getProductType = () => {
-        axios.get('/api/ProductTypes')
+        axios.get('https://localhost:7225/api/ProductTypes')
             .then((result) => {
                 setProductType(result.data);
             })
@@ -227,16 +230,18 @@ function Header() {
         if (name === null) {
             return (<div className="dropdown-menu dropdown-menu-right">
                 <Link className="dropdown-item" to={"/login"} type="button">
-                    Sign in
+                    <h6 className="fa fa-sign-in text-black-50 mr-2 " />
+                    Đăng nhập
                 </Link>
                 <Link className="dropdown-item" to={"/signup"} type="button">
-                    Sign up
+                    <h6 className="fa fa-user-plus text-black-50 mr-2 " />
+                    Đăng ký
                 </Link>
             </div>)
         } else {
             return (<div className="dropdown-menu dropdown-menu-right">
                 <div className="dropdown-item" >
-                    Xin chao {name}
+                    Xin chào {name}
                 </div>
                 <Link className="dropdown-item" to={"/myaccount"} type="button">
                     <h6 className="fa fa-user-circle text-black-50 mr-2 " />
@@ -245,7 +250,7 @@ function Header() {
 
                 <button className="dropdown-item" type="button" onClick={() => handleSighOut()}>
                     <h6 className="fa fa-sign-out text-black-50 mr-2 " />
-                    Sign Out
+                    Đăng xuât
                 </button>
             </div>)
         }
@@ -359,7 +364,7 @@ function Header() {
                                                 autoComplete="off"
                                             />
                                             <button className="bg-transparent text-primary" >
-                                                <NavLink className="fa fa-search " to={`/shop/${searchQuery}`}></NavLink>
+                                                <NavLink className="fa fa-search " to={`../shop/${searchQuery}`}></NavLink>
                                             </button>
                                         </form>
                                         <ul className="ht-dropdown search-box-width">
@@ -367,23 +372,26 @@ function Header() {
                                                 {search && search.length > 0
                                                     ? search.map((item) => {
                                                         return (
+
                                                             <div className="single-search-box">
-                                                                <div className="cart-img">
-                                                                    <a href="/#">
-                                                                        <img
-                                                                            src={`../ASSETS/image/${item.image}`}
-                                                                            alt="cart-image"
-                                                                        />
-                                                                    </a>
-                                                                </div>
-                                                                <div className="cart-content">
-                                                                    <h6>
-                                                                        <Link to={`detail/${item.id}`}>
-                                                                            {item.name}{" "}
-                                                                        </Link>
-                                                                    </h6>
-                                                                    <h6 className="text-red">{VND.format(item.price)}</h6>
-                                                                </div>
+                                                                <Link to={`detail/${item.id}`}>
+                                                                    <div className="cart-img">
+                                                                        <a href="/#">
+                                                                            <img
+                                                                                src={`../ASSETS/image/${item.image}`}
+                                                                                alt="cart-image"
+                                                                            />
+                                                                        </a>
+                                                                    </div>
+                                                                    <div className="cart-content">
+                                                                        <h6>
+                                                                            <Link to={`../detail/${item.id}`}>
+                                                                                {item.name}{" "}
+                                                                            </Link>
+                                                                        </h6>
+                                                                        <h6 className="text-red">{VND.format((item.price - (item.productPromotion.percent * item.price) / 100))}</h6>
+                                                                    </div>
+                                                                </Link>
                                                             </div>
                                                         );
                                                     })
@@ -396,7 +404,7 @@ function Header() {
                         </div>
                     </div>
                     <div className="col-lg-4 col-6 text-right">
-                        <p className="m-0">Customer Service</p>
+                        <p className="m-0 mr-6">Liên hệ</p>
                         <h5 className="m-0">+012 345 6789</h5>
                     </div>
                 </div>
@@ -427,9 +435,9 @@ function Header() {
                                 {
                                     producttype.map((item, index) => {
                                         return (
-                                            <a href="" className="nav-item nav-link">
+                                            <Link href="" className="nav-item nav-link" to={'../shop'}>
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         )
                                     })
                                 }
@@ -542,7 +550,7 @@ function Header() {
                                 </div>
 
                                 <div className="navbar-nav ml-0 mb-2 py-0 my-n1 d-none d-lg-block">
-                                    <a href="" className="btn px-0">
+                                    <Link href="" className="btn px-0" to={'../productlike'}>
                                         <i className="fas fa-heart text-primary" />
                                         <span
                                             className="badge text-secondary border border-secondary rounded-circle"
@@ -550,7 +558,7 @@ function Header() {
                                         >
                                             {countLike}
                                         </span>
-                                    </a>
+                                    </Link>
 
                                     {/* <Link href="" className="btn px-0 ml-3" to={"/cart"}>
                                         <i className="fas fa-shopping-cart text-primary" />
@@ -626,7 +634,7 @@ function Header() {
                                         className="btn btn-sm btn-light dropdown-toggle"
                                         data-toggle="dropdown"
                                     >
-                                        My Account
+                                        Tài khoản
                                     </button>
                                     {handlechecklogin()}
                                 </div>

@@ -6,8 +6,9 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Pagination from "../components/pagination";
-import ReactPaginate from "react-paginate";
+
+import ReactPaginate from 'react-paginate';
+import ReactStars from 'react-rating-star-with-type'
 function Shop() {
   const params = useParams();
   const [data, setData] = useState([]);
@@ -21,50 +22,57 @@ function Shop() {
   const [loadFromFirstPage, setLoadFromFirstPage] = useState(false);
   const [checkedBrands, setCheckedBrands] = useState([]);
   const [name1, setName] = useState('');
+  const [datalike, setDataLike] = useState([]);
+  const [count, setCount] = useState(0);
+  const [selectedRanges, setSelectedRanges] = useState([]);
 
   const selectedBrands = checkedBrands.length > 0 ? checkedBrands.join(',') : undefined;
   useEffect(() => {
+    fetchData()
+    getDataLike();
+    setCount(0)
+  }, [params, count])
+  useEffect(() => {
+
     fetch("https://localhost:7225/api/admin/ProductTypes").then((data) => data.json()).then((val) => setValues(val))
-    async function fetchData() {
 
-      try {
-
-        console.log('data', name1)
-        await axios
-          .get("https://localhost:7225/api/Products/FilteredProducts", {
-            params: {
-              brands: selectedBrands,
-              minPrice: minPrice,
-              maxPrice: maxPrice,
-              encodednames: name1,
-              page: page,
-              pageSize: pageSize
-            },
-          })
-          .then((res) => {
-            setData(res.data.paginatedProducts);
-            setPageCount(res.data.totalPages);
-            setProCount(res.data.totalCount);
-            console.log(res.data);
-            // console.log(selectedBrands);
-            if (loadFromFirstPage) {
-              setPage(1);
-            }
-            if (selectedBrands == null) {
-              window.history.pushState(null, null, `?page=${page}`);
-              setName(params.encodednames)
-            }
-            else {
-              window.history.pushState(null, null, `?brand=${selectedBrands}` + `/` + `?encodednames=${name1}` + `/` + `?page=${page}`);
-            }
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    }
     fetchData();
   }, [selectedBrands, name1, minPrice, maxPrice, page, pageSize], [loadFromFirstPage]);
   const usenavigate = useNavigate();
+  const fetchData = () => {
+
+
+
+    axios
+      .get("https://localhost:7225/api/Products/FilteredProducts", {
+        params: {
+          brands: selectedBrands,
+          minPrice: minPrice,
+          maxPrice: maxPrice,
+          encodednames: name1,
+          page: page,
+          pageSize: pageSize
+        },
+      })
+      .then((res) => {
+        setData(res.data.paginatedProducts);
+        setPageCount(res.data.totalPages);
+        setProCount(res.data.totalCount);
+        // console.log(selectedBrands);
+        if (loadFromFirstPage) {
+          setPage(1);
+        }
+        if (selectedBrands == null) {
+          window.history.pushState(null, null, `?page=${page}`);
+          setName(params.encodednames)
+        }
+        else {
+          window.history.pushState(null, null, `?brand=${selectedBrands}` + `/` + `?encodednames=${name1}` + `/` + `?page=${page}`);
+          setName(params.encodednames)
+        }
+      });
+
+  }
   const getData = () => {
     axios.get('https://localhost:7225/api/Products')
       .then((result) => {
@@ -79,10 +87,10 @@ function Shop() {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      // Thêm thương hiệu mới vào mảng đã chọn:
+
       setCheckedBrands([...checkedBrands, value]);
     } else {
-      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+
       const updatedBrands = checkedBrands.filter((item) => item !== value);
       setCheckedBrands(updatedBrands);
     }
@@ -91,11 +99,11 @@ function Shop() {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      // Thêm thương hiệu mới vào mảng đã chọn:
+
       setMinPrice(0);
       setMaxPrice(10000000)
     } else {
-      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+
       setMaxPrice(200000000)
     }
   };
@@ -103,12 +111,12 @@ function Shop() {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      // Thêm thương hiệu mới vào mảng đã chọn:
+
       setMinPrice(10000000);
       setMaxPrice(20000000)
     } else {
       setMinPrice(0);
-      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+
       setMaxPrice(200000000)
     }
   };
@@ -116,12 +124,12 @@ function Shop() {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      // Thêm thương hiệu mới vào mảng đã chọn:
+
       setMinPrice(20000000);
       setMaxPrice(30000000)
     } else {
       setMinPrice(0);
-      // Loại bỏ thương hiệu khỏi mảng đã chọn:
+
       setMaxPrice(200000000)
     }
   };
@@ -138,6 +146,7 @@ function Shop() {
       setMaxPrice(200000000)
     }
   };
+
   const handlePase = () => {
     setPage(1)
   }
@@ -164,6 +173,7 @@ function Shop() {
       })
         .then(() => {
           toast.success('Đã thêm một sản phẩm vào giỏ hàng');
+          setCount(count + 1);
         }).catch((error) => {
           toast.error(error);
         })
@@ -173,13 +183,61 @@ function Shop() {
     style: 'currency',
     currency: 'VND',
   });
+  const getDataLike = () => {
+    const token = sessionStorage.getItem('token')
+    axios.get('https://localhost:7225/api/productlikes', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then((result) => {
+        setDataLike(result.data)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+  const handleLike = (id) => {
+    return (datalike.map((item) => {
+      if (item.productId === id) {
+        return (<i className="fa fa-heart" />)
+      }
+
+    }))
+  }
+  const handleAddtoLike = (item) => {
+    const token = sessionStorage.getItem('token')
+
+    if (token === null) {
+      toast.error('Vui lòng đăng nhập để sử dụng');
+      usenavigate('/Login')
+    }
+    else {
+      const url = 'https://localhost:7225/api/productlikes';
+      const data1 = {
+        "accountId": 1,
+        "productId": item.id,
+        "product": null,
+        "status": true
+      }
+      //console.log('ok', token)
+      //JSON.parse(sessionStorage.getItem('data')).data1.id;
+      axios.post(url, data1, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then((result) => {
+          toast.success(result.data.message)
+          setCount(count + 1);
+        }).catch((error) => {
+          toast.error(error);
+        })
+    }
+  }
   function handlePageClick(data) {
     // Khi chuyển sang trang mới, ta chỉ cập nhật currentPage mà không tải lại dữ liệu
     setPage(data.selected + 1);
   }
   const displayProducts = data.map((item) => {
     return (
-      <div className="col-lg-3 col-md-4 col-sm-6 pb-1" key={item.id}>
+      <div className="col-lg-3 col-md-4 col-sm-6 pb-1" >
         <div className="product-item bg-light mb-4">
           <div className="product-img position-relative overflow-hidden">
             <img className="img-fluid w-100" src={`../ASSETS/image/${item.image}`} alt="" />
@@ -187,32 +245,29 @@ function Shop() {
               <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item.id)} href="">
                 <i className="fa fa-shopping-cart" />
               </Link>
-              <a className="btn btn-outline-dark btn-square" href="">
-                <i className="far fa-heart" />
-              </a>
-              <a className="btn btn-outline-dark btn-square" href="">
-                <i className="fa fa-sync-alt" />
-              </a>
-              <a className="btn btn-outline-dark btn-square" href="">
+              <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoLike(item)}>
+                {handleLike(item.id)}
+              </Link>
+              <Link className="btn btn-outline-dark btn-square" to={`../detail/${item.id}`} href="">
                 <i className="fa fa-search" />
-              </a>
+              </Link>
             </div>
           </div>
           <div className="text-center py-4">
             <Link className="h6 text-uppercase" to={`../detail/${item.id}`}> {item.name}</Link>
             <div className="d-flex align-items-center justify-content-center mt-2">
               <h6>{VND.format((item.price - (item.productPromotion.percent * item.price) / 100))}</h6>
-              <h7 className="text-muted ml-2">
+              <h6 className="text-muted ml-2">
                 <del>{VND.format(item.price)}</del>
-              </h7>
+              </h6>
             </div>
             <div className="d-flex align-items-center justify-content-center mb-1">
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small className="fa fa-star text-primary mr-1" />
-              <small>(99)</small>
+              <ReactStars
+                value={item.rating}
+                edit={true}
+                activeColors={["orange", "orange", "orange", "orange", "orange",]}
+              /><small className="pt-2">({item.rating})</small>
+
             </div>
           </div>
         </div>
@@ -237,9 +292,9 @@ function Shop() {
                 <Link className="breadcrumb-item text-dark" to={"/"}>
                   Trang chủ
                 </Link>
-                <Link className="breadcrumb-item text-dark" to={"/shop"}>
+                <span className="breadcrumb-item span" >
                   Sản phẩm
-                </Link>
+                </span>
               </nav>
             </div>
           </div>
@@ -279,7 +334,7 @@ function Shop() {
                         onChange={handleBrandCheckboxChange}
                         onClick={() => handlePase()}
                       />
-                      <label key={brand} className="custom-control-label" htmlFor={brand.name}>
+                      <label className="custom-control-label" htmlFor={brand.name}>
                         {brand.name}
                       </label>
 
@@ -397,28 +452,32 @@ function Shop() {
                 {displayProducts}
                 <div className="col-12">
                   <nav>
-                    <ul className="pagination justify-content-center">
+                    <ul className="paginations justify-content-center">
+
                       <ReactPaginate
-                        previousLabel={<li className="page-item">
-                          <a className="page-link" href="#">
-                            Previous
-                          </a>
-
-
-                        </li>}
-                        nextLabel={<li className="page-item">
-                          <a className="page-link" href="#">
-                            Next
-                          </a>
-                        </li>}
+                        previousLabel={
+                          <li className="page-item">
+                            <a className="page-link" >
+                              Previous
+                            </a>
+                          </li>
+                        }
+                        nextLabel={
+                          <li className="page-item">
+                            <a className="page-link" >
+                              Next
+                            </a>
+                          </li>
+                        }
+                        breakLabel="..."
                         pageCount={pageCount}
                         onPageChange={handlePageClick}
-                        containerClassName={"pagination"}
+                        containerClassName={"paginations"}
                         previousLinkClassName={"previous_page"}
                         nextLinkClassName={"next_page"}
-                        disabledClassName={"disabled"}
-                        activeClassName={"active"}
-                        forcePage={page - 1}
+                        disabledClassName={"disableds"}
+                        activeClassName={"actives"}
+                        pageClassName={"page-link"}
                       />
                     </ul>
                   </nav>

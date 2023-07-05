@@ -1,7 +1,23 @@
-import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import Jquery from "../components/Jquery";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ClipLoader } from 'react-spinners';
 function Footer() {
+    const usenavigate = useNavigate();
+    const handlecheck = () => {
+        const token = sessionStorage.getItem('token')
+
+        if (token === null) {
+            toast.error('Vui lòng đăng nhập để sử dụng');
+        } else {
+            usenavigate('/myaccount')
+        }
+    }
     return (
+
         <Fragment>
             {/* Footer Start */}
             <div className="container-fluid bg-dark text-secondary mt-5 pt-5">
@@ -59,7 +75,7 @@ function Footer() {
                                         <i className="fa fa-angle-right mr-2" />
                                         Đăng ký
                                     </Link>
-                                    <Link className="text-secondary mb-2" to={"/myaccount"} href="#">
+                                    <Link className="text-secondary mb-2" onClick={() => handlecheck()} href="#">
                                         <i className="fa fa-angle-right mr-2" />
                                         Tài khoản cá nhân
                                     </Link>

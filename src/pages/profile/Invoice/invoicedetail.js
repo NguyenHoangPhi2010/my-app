@@ -1,23 +1,49 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Tab from 'react-bootstrap/Tab';
-import Header from "../../../components/Header";
+import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
-import Menu from "../menu";
-import Invoice from "./invoice";
 import Jquery from "../../../components/Jquery";
-
+import { Modal } from "react-bootstrap";
+import { Rating } from 'react-simple-star-rating'
+import ReactStars from 'react-rating-star-with-type'
 function InvoiceDetails() {
     const params = useParams();
+    const [count, setCount] = useState(0);
+    const [show, setShow] = useState(false);
+    const handleClose = () => { setShow(false); }
+    const [dataproductPromotion, setDataPoductPromotion] = useState([]);
     const [datadetail, setDataDetail] = useState([]);
     const [data, setData] = useState([]);
+    const [dataproduct, setDataProduct] = useState([]);
     const [user, setUser] = useState([]);
+    const [review, setReview] = useState('')
+    const [rating, setRating] = useState(0)
+    const [quantity, setQuantity] = useState(0)
+    const usenavigate = useNavigate();
+    const handleRating = (rate) => {
+        setRating(rate)
+        // Some logic
+    }
     useEffect(() => {
         getData();
         getDataDetail();
     }, [])
+    const handleShow = (id, quanti) => {
+        getProductDetail(id);
+        setQuantity(quanti)
+        setShow(true);
+    }
+    const getProductDetail = (id) => {
+        axios.get(`https://localhost:7225/api/Products/${id}`)
+            .then((result) => {
+                setDataProduct(result.data)
+                setDataPoductPromotion(result.data.productPromotion)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }
     const getDataDetail = () => {
         let id = params.id;
         axios.get(`https://localhost:7225/api/InvoiceDetails/${id}`)
@@ -79,8 +105,48 @@ function InvoiceDetails() {
 
         }
     }
+    const clear = () => {
+        setRating(0);
+        setReview('');
+    }
+    const handleReview = (item) => {
+        const token = sessionStorage.getItem('token');
+        if (token === null) {
+            toast.error('Vui lòng đăng nhập');
+            usenavigate('/Login')
+        }
+        else {
+            const url = 'https://localhost:7225/api/ProductReviews';
+            const data1 = {
+                "accountId": 1,
+                "productId": item.id,
+                "product": null,
+                "rating": rating,
+                "comment": review,
+                "issuedDate": "2023-07-01T16:57:31.054Z",
+                "status": true
+            }
+
+
+            axios.post(url, data1, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then((result) => {
+                    toast.success(result.data.message);
+                    setCount(count + 1);
+                    handleClose();
+                    clear();
+                    console.log(result)
+                }).catch((error) => {
+                    toast.error(error);
+                })
+
+        }
+    }
+
     return (
         <Fragment>
+            <ToastContainer />
             <Jquery />
             <>
                 <div className="container-fluid bg-grey">
@@ -128,15 +194,19 @@ function InvoiceDetails() {
                                                 </td>
                                                 <td>
                                                     <Link className="h6 text-uppercase" to={`../detail/${item.product.id}`}> {item.product.name}</Link>
-                                                    <p className="mb-4.5">Số lượng: {item.quantity}</p>
-
-                                                    <h6 className="text-red">{VND.format(item.product.price)}</h6>
-
+                                                    <p className="mb-5">Số lượng: {item.quantity}</p>
+                                                    <div className="d-flex align-items-center">
+                                                        <h6 className="text-red">{VND.format((item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</h6>
+                                                        <small className="text-muted ml-2">
+                                                            <del>{VND.format(item.product.price)}</del>
+                                                        </small>
+                                                    </div>
 
                                                 </td>
 
                                                 <td className="text-lg-right">
-                                                    <button className="btn btn-sm btn-danger">
+                                                    <button className="btn btn-sm btn-danger" onClick={
+                                                        () => { handleShow(item.product.id, item.quantity) }}>
                                                         Đánh giá
                                                     </button>
                                                 </td>
@@ -215,7 +285,101 @@ function InvoiceDetails() {
 
                     </div>
                 </div>
+                <Modal show={show} onHide={handleClose} className=" mt-5">
+                    <Modal.Header className="bg-grey  rounded-sm  ">
+                        <Modal.Title >Đánh giá sản phẩm
+                        </Modal.Title>
+                        <button className="btn btn-sm btn-danger" onClick={() => handleClose()}>
+                            <i className="fa fa-times" />
+                        </button>
+                    </Modal.Header>
+                    <Modal.Body >
+                        <div className="bg-grey rounded-sm p-2 mb-2" style={{ width: 550 }}>
+                            <tr >
+                                <td className="align-middle">
+                                    <img src={`../ASSETS/image/${dataproduct.image}`} alt="" style={{ width: 180 }} />
 
+                                </td>
+                                <td>
+                                    <Link className="h6 text-uppercase" to={`../detail/${dataproduct.id}`} > {dataproduct.name}</Link>
+                                    <p className="mb-4">Số lượng: {quantity}</p>
+                                    <div className="d-flex align-items-center  mt-2">
+                                        <h6 className="text-red">{VND.format((dataproduct.price - (dataproductPromotion.percent * dataproduct.price) / 100))}</h6>
+                                        <small className="text-muted ml-2">
+                                            <del>{VND.format(dataproduct.price)}</del>
+                                        </small>
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+                        </div>
+                        <div className="rounded-sm ">
+                            <h4 className="section-title position-relative font-weight-bold text-center  mb-3  ">
+                                <span className="bg-secondary pr-3">Sản phẩm của bạn như thế nào?</span>
+                            </h4>
+                            <p className="mb-0 text-center mr-2">Hãy để lại đánh giá và nhận xét của bạn</p>
+                            <div className="text-center my-3">
+
+                                <div className="text-primary ">
+                                    <Rating
+
+                                        onClick={handleRating}
+                                        ratingValue={rating}
+                                        size={20}
+                                        label
+                                        transition
+                                        fillColor='orange'
+                                        emptyColor='gray'
+                                        className='foo ' // Will remove the inline style if applied
+                                    />
+                                    {/* Use rating value */}
+
+                                </div>
+                            </div>
+                            <form>
+                                <div className="form-group">
+                                    <label htmlFor="message"></label>
+                                    <textarea
+                                        id="message"
+                                        placeholder="Chia sẻ cảm nhận của bạn về sản phẩm"
+                                        cols={30}
+                                        rows={5}
+                                        className="form-control"
+                                        defaultValue={""}
+                                        value={review} onChange={(e) => setReview(e.target.value)}
+                                    />
+                                </div>
+                                {/* <div className="form-group">
+                                                        <label htmlFor="name">Your Name *</label>
+                                                        <input type="text" className="form-control" id="name" />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label htmlFor="email">Your Email *</label>
+                                                        <input type="email" className="form-control" id="email" />
+                                                    </div> */}
+                                <div className="form-group text-center  mb-0">
+                                    <input
+
+                                        defaultValue="Hũy bỏ"
+                                        className="btn btn-secondary mr-2 px-3"
+                                        onClick={() => handleClose()}
+                                    />
+                                    <input
+
+                                        defaultValue="Đánh giá"
+                                        className="btn btn-primary px-3"
+                                        onClick={() => handleReview(data)}
+                                    />
+                                </div>
+                            </form>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+
+                    </Modal.Footer>
+                </Modal>
 
             </>
 

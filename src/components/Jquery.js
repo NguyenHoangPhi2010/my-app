@@ -40,7 +40,7 @@ function Jquery() {
             });
 
             // Vendor carousel
-            $('.vendor-carousel').on("owlCarousel", {
+            $('.vendor-carousel').owlCarousel({
                 loop: true,
                 margin: 29,
                 nav: false,
@@ -67,7 +67,7 @@ function Jquery() {
 
 
             // Related carousel
-            $('.related-carousel').on("owlCarousel", {
+            $('.related-carousel').owlCarousel({
                 loop: true,
                 margin: 29,
                 nav: false,
@@ -88,7 +88,6 @@ function Jquery() {
                     }
                 }
             });
-
 
             // Product Quantity
             $('.quantity button').on('click', function () {

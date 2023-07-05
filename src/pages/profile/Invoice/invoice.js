@@ -119,6 +119,7 @@ function Invoice() {
                                 <tr>
 
                                     <th>Mã đơn hàng</th>
+                                    <th>Ngày lập</th>
                                     <th>Tình trạng</th>
                                     <th>Tổng tiền</th>
                                     <th></th>
@@ -133,6 +134,7 @@ function Invoice() {
 
                                             <tr key={Index}>
                                                 <td className="align-middle">{item.code}</td>
+                                                <td className="align-middle">{item.issuedDate}</td>
                                                 <td className="align-middle">{renderStatus(item)}</td>
                                                 <td className="align-middle text-red">{VND.format(item.total)}</td>
                                                 <td className="align-middle">
