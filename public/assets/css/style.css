@@ -11289,6 +11289,22 @@ span.total-pro {
   border-radius: 0.5rem;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
+.formsss-control {
+  display: block;
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4rem;
+  color: #495057;
+  background-clip: padding-box;
+  border: 1px solid #d2d6da;
+  appearance: none;
+  border-radius: 0.5rem;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .forms-control {
@@ -12191,7 +12207,7 @@ textarea.forms-control.is-invalid {
   color: rgb(228, 20, 20);
   font-weight: 700;
   text-decoration: unset;
-  font-size: 13px;
+  font-size: 18px;
   line-height: 20px;
   overflow: hidden;
   display: -webkit-box;
@@ -12213,7 +12229,7 @@ textarea.forms-control.is-invalid {
   color: inherit;
   font-weight: 400;
   text-decoration: unset;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 20px;
   overflow: hidden;
   display: -webkit-box;
@@ -12256,7 +12272,7 @@ textarea.forms-control.is-invalid {
 }
 .css-1x5ixzd {
   font-weight: bold;
-  font-size: large;
+  font-size: 20px;
 }
 .css-1ilwpbr {
   background-color: rgba(232, 230, 230, 0.853);

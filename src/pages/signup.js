@@ -68,7 +68,7 @@ function SignUp() {
                 const data = await res.json()
                 Imagepath = data.secure_url
 
-                const url = 'https://localhost:7225/Authenticate/register-admin';
+                const url = 'https://localhost:7225/Authenticate/register';
                 const form = {
 
                     "username": name,
@@ -98,7 +98,16 @@ function SignUp() {
         } catch (error) {
             const validationErrors = error.inner;
             validationErrors.forEach((error) => {
-                toast.error(error.message);
+                toast.error(error.message, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
             });
         }
 

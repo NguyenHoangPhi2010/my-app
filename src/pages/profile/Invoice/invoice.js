@@ -35,32 +35,33 @@ function Invoice() {
         }
 
     }
+    console.log('data', data)
     const renderStatus = (item) => {
         if (item.status === 1) {
             return (
-                <b className="text-danger text-sm font-weight-bolder btn-grey">Chờ xác nhận</b>
+                <div style={{ width: "150px" }}><b className="text-danger text-sm font-weight-bolder btn-grey">Chờ xác nhận</b></div>
 
             )
 
         }
         else if (item.status == 2) {
             return (
-                <div><b b style={{ color: "#F29727" }} className="text-sm font-weight-bolder btn-grey">Đã xác nhận</b></div>
+                <div style={{ width: "150px" }}><b style={{ color: "#F29727" }} className="text-sm font-weight-bolder btn-grey">Đã xác nhận</b></div>
             )
         }
         else if (item.status == 3) {
             return (
-                <div><b style={{ color: "#F2BE22" }} className="text-sm font-weight-bolder btn-grey">Đang giao</b></div>
+                <div style={{ width: "150px" }}><b style={{ color: "#F2BE22" }} className="text-sm font-weight-bolder btn-grey">Đang giao</b></div>
             )
         }
         else if (item.status == 4) {
             return (
-                <div><b style={{ color: "#22A699" }} className="text-sm font-weight-bolder btn-grey">Đã giao</b></div>
+                <div style={{ width: "150px" }}><b style={{ color: "#22A699" }} className="text-sm font-weight-bolder btn-grey">Đã giao</b></div>
             )
         }
         else {
             return (
-                <div><b className="text-success text-sm font-weight-bolder btn-grey">Hoàn tất</b></div>
+                <div style={{ width: "150px" }}><b style={{ color: "red" }} className="text-sm font-weight-bolder btn-grey">Đã hủy</b></div>
             )
 
         }
@@ -139,7 +140,7 @@ function Invoice() {
                                                 <td className="align-middle text-red">{VND.format(item.total)}</td>
                                                 <td className="align-middle">
 
-                                                    <Link className="btn btn-primary" on to={`/invoicedetail/${item.id}`}>
+                                                    <Link className="btn btn-primary" to={`/invoicedetail/${item.id}`}>
                                                         Xem chi tiết
                                                     </Link>
 

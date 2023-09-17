@@ -15,7 +15,7 @@ function Contact() {
                                     Trang chủ
                                 </Link>
                                 <span className="breadcrumb-item active">
-                                    Hổ trợ
+                                    Hỗ trợ
                                 </span>
                             </nav>
                         </div>
@@ -25,7 +25,7 @@ function Contact() {
                 {/* Contact Start */}
                 <div className="container-fluid">
                     <h2 className="section-title position-relative text-uppercase mx-xl-5 mb-4">
-                        <span className="bg-secondary pr-3">Hổ trợ</span>
+                        <span className="bg-secondary pr-3">Hỗ trợ</span>
                     </h2>
                     <div className="row px-xl-5">
                         <div className="col-lg mb-5">
@@ -37,7 +37,7 @@ function Contact() {
                                             type="text"
                                             className="form-control"
                                             id="name"
-                                            placeholder="Your Name"
+                                            placeholder=""
                                             required="required"
                                             data-validation-required-message="Please enter your name"
                                         />
@@ -48,7 +48,7 @@ function Contact() {
                                             type="email"
                                             className="form-control"
                                             id="email"
-                                            placeholder="Your Email"
+                                            placeholder=""
                                             required="required"
                                             data-validation-required-message="Please enter your email"
                                         />
@@ -59,7 +59,7 @@ function Contact() {
                                             type="text"
                                             className="form-control"
                                             id="subject"
-                                            placeholder="Subject"
+                                            placeholder=""
                                             required="required"
                                             data-validation-required-message="Please enter a subject"
                                         />
@@ -70,7 +70,7 @@ function Contact() {
                                             className="form-control"
                                             rows={8}
                                             id="message"
-                                            placeholder="Message"
+                                            placeholder=""
                                             required="required"
                                             data-validation-required-message="Please enter your message"
                                             defaultValue={""}

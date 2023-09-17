@@ -10,8 +10,10 @@ import Tab from 'react-bootstrap/Tab';
 import Menu from "./menu";
 import Invoice from "./Invoice/invoice";
 import Account from "./Account/account";
+import ReactStars from 'react-rating-star-with-type'
 function ProductLike() {
     const [data, setData] = useState([]);
+    const urlimg = "https://localhost:7225/images/";
     const usenavigate = useNavigate();
     useEffect(() => {
         getData();
@@ -129,7 +131,7 @@ function ProductLike() {
                                                         <div className="col-lg-3 col-md-4 col-sm-6 pb-1" key={item.id}>
                                                             <div className="product-item bg-light mb-4">
                                                                 <div className="product-img position-relative overflow-hidden">
-                                                                    <img className="img-fluid w-100" src={`ASSETS/image/${item.product.image}`} alt="" />
+                                                                    <img className="img-fluid w-100" src={(item.product.image)} />
                                                                     <div className="product-action">
                                                                         <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item)} href="">
                                                                             <i className="fa fa-shopping-cart" />
@@ -137,9 +139,7 @@ function ProductLike() {
                                                                         <Link className="btn btn-outline-dark btn-square" onClick={() => handledelecttoLike(item)} href="">
                                                                             <i className="fa fa-times" />
                                                                         </Link>
-                                                                        <a className="btn btn-outline-dark btn-square" href="">
-                                                                            <i className="fa fa-sync-alt" />
-                                                                        </a>
+
                                                                         <Link className="btn btn-outline-dark btn-square" to={`../detail/${item.product.id}`} href="">
                                                                             <i className="fa fa-search" />
                                                                         </Link>
@@ -154,12 +154,11 @@ function ProductLike() {
                                                                         </h6>
                                                                     </div>
                                                                     <div className="d-flex align-items-center justify-content-center mb-1">
-                                                                        <small className="fa fa-star text-primary mr-1" />
-                                                                        <small className="fa fa-star text-primary mr-1" />
-                                                                        <small className="fa fa-star text-primary mr-1" />
-                                                                        <small className="fa fa-star text-primary mr-1" />
-                                                                        <small className="fa fa-star text-primary mr-1" />
-                                                                        <small>(99)</small>
+                                                                        <ReactStars
+                                                                            value={item.product.rating}
+                                                                            edit={true}
+                                                                            activeColors={["orange", "orange", "orange", "orange", "orange",]}
+                                                                        /><small className="pt-1">({item.product.rating})</small>
                                                                     </div>
                                                                 </div>
                                                             </div>

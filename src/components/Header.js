@@ -338,7 +338,7 @@ function Header() {
                     <div className="col-lg-4">
                         <Link className="text-decoration-none" to="/">
                             <span className="h1 text-uppercase text-primary bg-dark px-2">
-                                Multi
+                                Laptoptp
                             </span>
                             <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
                                 Shop
@@ -364,7 +364,7 @@ function Header() {
                                                 autoComplete="off"
                                             />
                                             <button className="bg-transparent text-primary" >
-                                                <NavLink className="fa fa-search " to={`../shop/${searchQuery}`}></NavLink>
+                                                <Link className="fa fa-search " to={`../shop/${searchQuery}`}></Link>
                                             </button>
                                         </form>
                                         <ul className="ht-dropdown search-box-width">
@@ -378,7 +378,7 @@ function Header() {
                                                                     <div className="cart-img">
                                                                         <a href="/#">
                                                                             <img
-                                                                                src={`../ASSETS/image/${item.image}`}
+                                                                                src={item.image}
                                                                                 alt="cart-image"
                                                                             />
                                                                         </a>
@@ -471,7 +471,7 @@ function Header() {
                                     <Link className="nav-item nav-link" to="/">Trang chủ</Link>
                                     <Link className="nav-item nav-link" to="/shop">Sản phẩm</Link>
                                     <Link className="nav-item nav-link" to="/cart">Giỏ hàng</Link>
-                                    <Link className="nav-item nav-link" to="/contact">Hổ trợ</Link>
+                                    <Link className="nav-item nav-link" to="/contact">Hỗ trợ</Link>
 
 
                                 </div>
@@ -499,7 +499,7 @@ function Header() {
                                                                         <div className="cart-img">
                                                                             <a href="/#">
                                                                                 <img
-                                                                                    src={`../ASSETS/image/${item.product.image}`}
+                                                                                    src={item.product.image}
                                                                                     alt="cart-image"
                                                                                 />
                                                                             </a>

@@ -14,6 +14,7 @@ function InvoiceDetails() {
     const [dataproductPromotion, setDataPoductPromotion] = useState([]);
     const [datadetail, setDataDetail] = useState([]);
     const [data, setData] = useState([]);
+    const [datainvoice, setInvoice] = useState([]);
     const [dataproduct, setDataProduct] = useState([]);
     const [user, setUser] = useState([]);
     const [review, setReview] = useState('')
@@ -31,7 +32,9 @@ function InvoiceDetails() {
     const handleShow = (id, quanti) => {
         getProductDetail(id);
         setQuantity(quanti)
-        setShow(true);
+        if (data.status === 4) {
+            setShow(true);
+        } else (toast.error("Đơn hàng của bạn phải được hoàn thành bạn mới có thể đánh giá"))
     }
     const getProductDetail = (id) => {
         axios.get(`https://localhost:7225/api/Products/${id}`)
@@ -49,6 +52,7 @@ function InvoiceDetails() {
         axios.get(`https://localhost:7225/api/InvoiceDetails/${id}`)
             .then((result) => {
                 setDataDetail(result.data)
+                setInvoice(result.data.invoice)
             })
             .catch((error) => {
                 console.log(error)
@@ -70,7 +74,43 @@ function InvoiceDetails() {
                 console.log(error)
             })
     }
+    const editinvoid = () => {
+        if (window.confirm("Bạn có chắc muốn hũy đơn hàng") === true) {
+            if (data.status === 5) {
+                toast.error("Đơn hàng của bạn đã bị hũy trước đó");
+            } else if (data.status === 4) {
+                toast.error("Đơn hàng đã giao không được hủy");
+            } else if (data.status === 2) {
+                toast.error("Đơn hàng đã xác nhận không được hủy");
+            } else if (data.status === 3) {
+                toast.error("Đơn hàng đang giao không được hủy");
+            } else {
+                let id = params.id;
+                const url = `https://localhost:7225/api/Invoices/${id}`;
+                const data1 = {
+                    "id": id,
+                    "code": data.code,
+                    "applicationUserId": user.id,
+                    "applicationUser": null,
+                    "issuedDate": data.issuedDate,
+                    "shippingAddress": data.shippingAddress,
+                    "shippingPhone": data.shippingPhone,
+                    "total": data.total,
+                    "status": 5
+                }
+                axios.put(url, data1)
+                    .then((result) => {
+                        getData();
+                        clear();
+                        toast.success('Đã hủy đơn hàng thành công');
+                    }).catch((error) => {
+                        toast.error(error);
+                    })
+            }
+        }
 
+
+    }
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -85,22 +125,22 @@ function InvoiceDetails() {
         }
         else if (item == 2) {
             return (
-                <div><b b style={{ color: "#F29727" }} className="text-sm font-weight-bolder ">Đã xác nhận</b></div>
+                <b b style={{ color: "#F29727" }} className="text-sm font-weight-bolder ">Đã xác nhận</b>
             )
         }
         else if (item == 3) {
             return (
-                <div><b style={{ color: "#F2BE22" }} className="text-sm font-weight-bolder ">Đang giao</b></div>
+                <b style={{ color: "#F2BE22" }} className="text-sm font-weight-bolder ">Đang giao</b>
             )
         }
         else if (item == 4) {
             return (
-                <div><b style={{ color: "#22A699" }} className="text-sm font-weight-bolder ">Đã giao</b></div>
+                <b style={{ color: "#22A699" }} className="text-sm font-weight-bolder ">Đã giao</b>
             )
         }
         else {
             return (
-                <div><b className="text-success text-sm font-weight-bolder ">Hoàn tất</b></div>
+                <b style={{ color: "red" }} className="text-sm font-weight-bolder ">Đã hủy</b>
             )
 
         }
@@ -110,38 +150,31 @@ function InvoiceDetails() {
         setReview('');
     }
     const handleReview = (item) => {
+
         const token = sessionStorage.getItem('token');
-        if (token === null) {
-            toast.error('Vui lòng đăng nhập');
-            usenavigate('/Login')
+
+        const url = 'https://localhost:7225/api/ProductReviews';
+        const data1 = {
+            "accountId": 1,
+            "productId": item.id,
+            "product": null,
+            "rating": rating,
+            "comment": review,
+            "issuedDate": "2023-07-01T16:57:31.054Z",
+            "status": true
         }
-        else {
-            const url = 'https://localhost:7225/api/ProductReviews';
-            const data1 = {
-                "accountId": 1,
-                "productId": item.id,
-                "product": null,
-                "rating": rating,
-                "comment": review,
-                "issuedDate": "2023-07-01T16:57:31.054Z",
-                "status": true
-            }
-
-
-            axios.post(url, data1, {
-                headers: { 'Authorization': `Bearer ${token}` }
+        axios.post(url, data1, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                toast.success(result.data.message);
+                setCount(count + 1);
+                handleClose();
+                clear();
+                console.log(result)
+            }).catch((error) => {
+                toast.error(error);
             })
-                .then((result) => {
-                    toast.success(result.data.message);
-                    setCount(count + 1);
-                    handleClose();
-                    clear();
-                    console.log(result)
-                }).catch((error) => {
-                    toast.error(error);
-                })
-
-        }
     }
 
     return (
@@ -189,7 +222,7 @@ function InvoiceDetails() {
 
                                             <tr key={Index}>
                                                 <td className="align-middle">
-                                                    <img src={`../ASSETS/image/${item.product.image}`} alt="" style={{ width: 180 }} />
+                                                    <img src={item.product.image} alt="" style={{ width: 180 }} />
 
                                                 </td>
                                                 <td>
@@ -271,11 +304,11 @@ function InvoiceDetails() {
                             style={{ padding: 5 }}
                         >
                             <div className="d-flex bg-grey align-items-center">
-                                <h3 className="fa fa-map-marker bg-grey m-0 mx-4" />
+                                <h3 className="far fa-map-marker bg-grey m-0 mx-4" />
 
                                 <div className=" align-middle flex-fill pl-1">
 
-                                    <p className="font-weight-semi-bold m-1">{user.address}</p>
+                                    <p className="font-weight-semi-bold m-1">{data.shippingAddress}</p>
 
                                 </div>
                             </div>
@@ -283,6 +316,13 @@ function InvoiceDetails() {
                         </div>
 
 
+
+
+                    </div>
+                    <div className="px-xl-4 pb-5 text-center">
+                        <button className="btn btn-danger formsss-control" onClick={
+                            () => { editinvoid() }}>Hủy đơn hàng
+                        </button>
                     </div>
                 </div>
                 <Modal show={show} onHide={handleClose} className=" mt-5">
@@ -297,7 +337,7 @@ function InvoiceDetails() {
                         <div className="bg-grey rounded-sm p-2 mb-2" style={{ width: 550 }}>
                             <tr >
                                 <td className="align-middle">
-                                    <img src={`../ASSETS/image/${dataproduct.image}`} alt="" style={{ width: 180 }} />
+                                    <img src={dataproduct.image} alt="" style={{ width: 180 }} />
 
                                 </td>
                                 <td>
@@ -366,12 +406,10 @@ function InvoiceDetails() {
                                         className="btn btn-secondary mr-2 px-3"
                                         onClick={() => handleClose()}
                                     />
-                                    <input
 
-                                        defaultValue="Đánh giá"
-                                        className="btn btn-primary px-3"
-                                        onClick={() => handleReview(data)}
-                                    />
+                                    <button className="btn btn-primary px-3" onClick={() => { handleReview(dataproduct) }}>
+                                        <p className="text-center pr-4 pl-4" > Đánh giá</p>
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -383,7 +421,7 @@ function InvoiceDetails() {
 
             </>
 
-        </Fragment>
+        </Fragment >
     )
 }
 export default InvoiceDetails;

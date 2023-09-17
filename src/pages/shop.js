@@ -34,14 +34,13 @@ function Shop() {
   }, [params, count])
   useEffect(() => {
 
-    fetch("https://localhost:7225/api/admin/ProductTypes").then((data) => data.json()).then((val) => setValues(val))
-
+    fetch("https://localhost:7225/api/ProductTypes").then((data) => data.json()).then((val) => setValues(val))
+    setName(params.encodednames)
     fetchData();
-  }, [selectedBrands, name1, minPrice, maxPrice, page, pageSize], [loadFromFirstPage]);
+  }, [selectedBrands, name1, minPrice, maxPrice, page, pageSize]);
   const usenavigate = useNavigate();
+
   const fetchData = () => {
-
-
 
     axios
       .get("https://localhost:7225/api/Products/FilteredProducts", {
@@ -59,9 +58,6 @@ function Shop() {
         setPageCount(res.data.totalPages);
         setProCount(res.data.totalCount);
         // console.log(selectedBrands);
-        if (loadFromFirstPage) {
-          setPage(1);
-        }
         if (selectedBrands == null) {
           window.history.pushState(null, null, `?page=${page}`);
           setName(params.encodednames)
@@ -85,12 +81,9 @@ function Shop() {
   const handleBrandCheckboxChange = (event) => {
     const value = event.target.value;
     const isChecked = event.target.checked;
-
     if (isChecked) {
-
       setCheckedBrands([...checkedBrands, value]);
     } else {
-
       const updatedBrands = checkedBrands.filter((item) => item !== value);
       setCheckedBrands(updatedBrands);
     }
@@ -231,6 +224,24 @@ function Shop() {
         })
     }
   }
+  const handleProductPrice = (item, item1) => {
+    if (item === item1) {
+      return (
+        <div className="d-flex align-items-center justify-content-center mt-2">
+          <h5>{VND.format((item))}</h5>
+        </div>
+      )
+    } else {
+      return (
+        <div className="d-flex align-items-center justify-content-center mt-2">
+          <h5>{VND.format((item1))}</h5>
+          <h6 className="text-muted ml-2">
+            <del>{VND.format(item)}</del>
+          </h6>
+        </div>
+      )
+    }
+  }
   function handlePageClick(data) {
     // Khi chuyển sang trang mới, ta chỉ cập nhật currentPage mà không tải lại dữ liệu
     setPage(data.selected + 1);
@@ -240,7 +251,7 @@ function Shop() {
       <div className="col-lg-3 col-md-4 col-sm-6 pb-1" >
         <div className="product-item bg-light mb-4">
           <div className="product-img position-relative overflow-hidden">
-            <img className="img-fluid w-100" src={`../ASSETS/image/${item.image}`} alt="" />
+            <img className="img-fluid w-100" src={item.image} alt="" />
             <div className="product-action">
               <Link className="btn btn-outline-dark btn-square" onClick={() => handleAddtoCart(item.id)} href="">
                 <i className="fa fa-shopping-cart" />
@@ -256,10 +267,9 @@ function Shop() {
           <div className="text-center py-4">
             <Link className="h6 text-uppercase" to={`../detail/${item.id}`}> {item.name}</Link>
             <div className="d-flex align-items-center justify-content-center mt-2">
-              <h6>{VND.format((item.price - (item.productPromotion.percent * item.price) / 100))}</h6>
-              <h6 className="text-muted ml-2">
-                <del>{VND.format(item.price)}</del>
-              </h6>
+              {
+                handleProductPrice(item.price, item.pricePromotion)
+              }
             </div>
             <div className="d-flex align-items-center justify-content-center mb-1">
               <ReactStars
@@ -306,7 +316,7 @@ function Shop() {
             <div className="col-lg-3 col-md-4">
               {/* Price Start */}
               <h6 className="section-title position-relative text-uppercase mb-3">
-                <span className="bg-secondary pr-3">Lọc sản phẩm theo hảng sản xuất</span>
+                <span className="bg-secondary pr-3">Lọc sản phẩm theo hãng sản xuất</span>
               </h6>
               <div className="bg-light p-4 mb-30">
                 <form>

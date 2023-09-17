@@ -1,11 +1,15 @@
 import React, { Fragment, useState, useEffect } from "react";
 import axios from "axios";
+import * as Yup from 'yup';
 import Jquery from "../components/Jquery";
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Rating } from 'react-simple-star-rating'
 import ReactStars from 'react-rating-star-with-type'
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 function Detail() {
     const [quantity, setQuantity] = useState('1');
     const params = useParams();
@@ -22,9 +26,19 @@ function Detail() {
     const [rating, setRating] = useState(0) // initial rating value
     const [ratingdetail, setRatingDetail] = useState(0) // initial rating value
     const [review, setReview] = useState('')
+    const [dataimg, setdatimg] = useState([]);
+    const Schema = Yup.object().shape({
+
+        review: Yup.string()
+            .required('Vui lòng để lại đánh giá của bạn'),
+
+    });
+    console.log('sos', quantity)
+    console.log('ksks', quantityAsNumber)
     // Catch Rating value
     useEffect(() => {
         getData();
+        getDataimg();
         getDataReview();
     }, [count, params])
     const handleRating = (rate) => {
@@ -34,7 +48,11 @@ function Detail() {
     const handquantitydecrease = () => {
         setQuantity(quantityAsNumber - 1)
         if (quantity <= 1) {
+            toast.error('số lượng không được nhỏ hơn 0')
             setQuantity(1)
+            console.log('sos', quantity)
+            console.log('ksks', quantityAsNumber)
+            getData();
         }
 
     }
@@ -104,42 +122,62 @@ function Detail() {
         setRating(0);
         setReview('');
     }
-    const handleReview = (item) => {
-        const token = sessionStorage.getItem('token');
-        if (token === null) {
-            toast.error('Vui lòng đăng nhập');
-            usenavigate('/Login')
-        }
-        else {
-            const url = 'https://localhost:7225/api/ProductReviews';
-            const data1 = {
-                "accountId": 1,
-                "productId": item.id,
-                "product": null,
-                "rating": rating,
-                "comment": review,
-                "issuedDate": "2023-07-01T16:57:31.054Z",
-                "status": true
+    const handleReview = async (item) => {
+        try {
+            await Schema.validate({ review }, { abortEarly: false });
+            const token = sessionStorage.getItem('token');
+            if (token === null) {
+                toast.error('Vui lòng đăng nhập');
+                usenavigate('/Login')
             }
+            else {
+                const url = 'https://localhost:7225/api/ProductReviews';
+                const data1 = {
+                    "accountId": 1,
+                    "productId": item.id,
+                    "product": null,
+                    "rating": rating,
+                    "comment": review,
+                    "issuedDate": "2023-07-01T16:57:31.054Z",
+                    "status": true
+                }
 
 
-            axios.post(url, data1, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-                .then((result) => {
-                    toast.warning(result.data.message);
-                    setCount(count + 1);
-                    clear();
-                }).catch((error) => {
-                    toast.error(error);
+                axios.post(url, data1, {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 })
+                    .then((result) => {
+                        toast.warning(result.data.message);
+                        setCount(count + 1);
+                        clear();
+                    }).catch((error) => {
+                        toast.error(error);
+                    })
 
+            }
+        } catch (err) {
+            const validationErrors = err.inner;
+            validationErrors.forEach((error) => {
+                toast.error(error.message);
+            });
         }
+
     }
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
     });
+    const urlimg = "https://localhost:7225/images/";
+    const getDataimg = () => {
+        let id = params.id;
+        axios.get("https://localhost:7225/api/ProductImages/api/productimages/" + id)
+            .then((result) => {
+                setdatimg(result.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
     return (
         <Fragment>
             <ToastContainer />
@@ -174,49 +212,50 @@ function Detail() {
                                 className="carousel slide"
                                 data-ride="carousel"
                             >
+
                                 <div className="carousel-inner bg-light">
                                     <div className="carousel-item active">
+
                                         <img
                                             className="w-100 h-100"
-                                            src={`../ASSETS/image/${data.image}`}
+                                            src={data.image}
                                             alt="Image"
                                         />
+
+
                                     </div>
-                                    <div className="carousel-item">
-                                        <img
-                                            className="w-100 h-100"
-                                            src={`../ASSETS/image/${data.image}`}
-                                            alt="Image"
-                                        />
-                                    </div>
-                                    <div className="carousel-item">
-                                        <img
-                                            className="w-100 h-100"
-                                            src={`../ASSETS/image/${data.image}`}
-                                            alt="Image"
-                                        />
-                                    </div>
-                                    <div className="carousel-item">
-                                        <img
-                                            className="w-100 h-100"
-                                            src={`../ASSETS/image/${data.image}`}
-                                            alt="Image"
-                                        />
-                                    </div>
+                                    {
+                                        dataimg.map((item, index) => (
+                                            <div className="carousel-item">
+
+                                                <img
+                                                    className="w-100 h-100"
+                                                    src={urlimg + item.imagepath}
+                                                    alt="Image"
+                                                />
+
+
+                                            </div>
+                                        ))
+                                    }
+
+
+
                                 </div>
+
                                 <a
                                     className="carousel-control-prev"
                                     href="#product-carousel"
                                     data-slide="prev"
                                 >
-                                    <i className="fa fa-2x fa-angle-left text-dark" />
+                                    <i className="fa fa-2x fa-angle-left text-light" />
                                 </a>
                                 <a
                                     className="carousel-control-next"
                                     href="#product-carousel"
                                     data-slide="next"
                                 >
-                                    <i className="fa fa-2x fa-angle-right text-dark" />
+                                    <i className="fa fa-2x fa-angle-right text-light" />
                                 </a>
                             </div>
                         </div>
@@ -234,7 +273,7 @@ function Detail() {
                                     />
 
 
-                                    <small className="pt-1">({datareview.length} Reviews)</small>
+                                    <small className="pt-1">({datareview.length} Đánh giá)</small>
                                 </div>
                                 <h3 className="font-weight-semi-bold mb-4">{VND.format((data.price - (dataproductPromotion.percent * data.price) / 100))}</h3>
 
@@ -259,11 +298,11 @@ function Detail() {
                                         </div>
                                     </div>
                                     <button className="btn btn-primary px-3" onClick={() => handleAddtoCart(data)}>
-                                        <i className="fa fa-shopping-cart mr-1" /> Add To Cart
+                                        <i className="fa fa-shopping-cart mr-1" /> Thêm vào giỏ hàng
                                     </button>
                                 </div>
                                 <div className="d-flex pt-2">
-                                    <strong className="text-dark mr-2">Share on:</strong>
+                                    <strong className="text-dark mr-2">Chia sẻ:</strong>
                                     <div className="d-inline-flex">
                                         <a className="text-dark px-2" href="">
                                             <i className="fab fa-facebook-f" />
@@ -307,13 +346,23 @@ function Detail() {
                                         data-toggle="tab"
                                         href="#tab-pane-3"
                                     >
-                                        Dánh giá ({datareview.length})
+                                        Đánh giá ({datareview.length})
                                     </a>
                                 </div>
                                 <div className="tab-content">
                                     <div className="tab-pane fade show active" id="tab-pane-1">
                                         <h4 className="mb-3">Mô tả sản phẩm</h4>
-                                        <div style={style}>{data.description}</div>
+                                        <div className="text-dark" >
+                                            <CKEditor
+                                                editor={ClassicEditor}
+                                                data={data.description} // Sử dụng trường state để hiển thị nội dung
+                                                disabled={true} // Vô hiệu hóa CKEditor để ngăn người dùng chỉnh sửa
+                                                config={{
+
+                                                    toolbar: ['']
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="tab-pane fade" id="tab-pane-2">
                                         <div className="teko-col teko-col-4 ">
@@ -487,13 +536,11 @@ function Detail() {
                                                         <label htmlFor="email">Your Email *</label>
                                                         <input type="email" className="form-control" id="email" />
                                                     </div> */}
-                                                <div className="form-group  mb-0">
-                                                    <input
+                                                <div className="form-group  ">
 
-                                                        defaultValue="Đánh giá"
-                                                        className="btn btn-primary px-3"
-                                                        onClick={() => handleReview(data)}
-                                                    />
+                                                    <button className="btn btn-primary" onClick={() => handleReview(data)}>
+                                                        <i className="text-center pr-4 pl-4" > Đánh giá</i>
+                                                    </button>
                                                 </div>
                                             </form>
                                         </div>

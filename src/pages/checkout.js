@@ -1,37 +1,45 @@
-import React, { Fragment, useEffect, useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import React, { Fragment, useEffect, useState, } from "react";
+import * as Yup from 'yup';
 import Jquery from "../components/Jquery";
 import axios from "axios";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { PayPalButton } from "react-paypal-button-v2";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+
 function Checkout() {
     const [userName, setUserName] = useState('')
     const [fullname, setFullName] = useState('')
     const [phone, setPhone] = useState('')
     const [email, setEmail] = useState('')
     const [address, setAddress] = useState('')
-
     const [editID, setEditId] = useState('');
-    const [shippingAddress, SetshippingAddress] = useState('')
-    const [shippingPhone, SetshippingPhone] = useState('')
+    const params = useParams();
     const [data, setData] = useState([]);
     const [datauser, setDataUser] = useState([]);
+    const [amount, setAmount] = useState(0);
+    const total = params.total;
     const usenavigate = useNavigate();
     useEffect(() => {
-        getData();
         getUser();
-    }, [])
+        getData();
+        console.log(phone)
+        console.log(address)
+    }, [address, phone])
+    const token = sessionStorage.getItem('token')
+    const getData = async () => {
+
+        await axios.get('https://localhost:7225/api/Carts', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                setData(result.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
     const getUser = () => {
-        const token = sessionStorage.getItem('token')
         axios.get('https://localhost:7225/api/Accounts/GetUser', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -40,31 +48,16 @@ function Checkout() {
                 setDataUser(result.data)
                 setUserName(result.data.userName)
                 setFullName(result.data.fullName)
-                setAddress(result.data.address)
+                setAddress(result.data.address1)
                 setEmail(result.data.email)
                 setPhone(result.data.phoneNumber)
+
             })
             .catch((error) => {
                 console.log(error)
             })
     }
-    const getData = () => {
-        const token = sessionStorage.getItem('token')
-        if (token == null) {
-            console.log("Cart null")
-        } else {
-            axios.get('https://localhost:7225/api/Carts', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-                .then((result) => {
-                    setData(result.data)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
 
-    }
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -105,7 +98,7 @@ function Checkout() {
 
     }
     const handleDelect = (id) => {
-        if (window.confirm("Bạn có chắc muốn xóa sản phẩm khỏi giỏ hàng") == true) {
+        if (window.confirm("Bạn có chắc muốn xóa sản phẩm khỏi giỏ hàng") === true) {
             axios.delete(`https://localhost:7225/api/Carts/${id}`)
                 .then((result) => {
                     toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
@@ -116,49 +109,71 @@ function Checkout() {
                 })
         }
     }
-    const handleCheckOut = () => {
-        const token = sessionStorage.getItem('token')
-        console.log('ok', token)
-        const url = 'https://localhost:7225/api/Invoices';
-        const data = {
-            "code": "string",
-            "applicationUserId": "string",
-            "applicationUser": null,
-            "issuedDate": "2023-05-20T14:04:06.905Z",
-            "shippingAddress": shippingAddress,
-            "shippingPhone": shippingPhone,
-            "total": 0,
-            "status": 1
-        }
-        console.log('ok', data)
-        axios.post(url, data, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-            .then(() => {
-                toast.success('Đơn hàng đang chờ xác nhận vui lòng đợi');
-                usenavigate('/profile')
-            }).catch((error) => {
-                toast.error(error);
+    const Schema = Yup.object().shape({
+        phone: Yup.string()
+            .matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ')
+            .required('Số điện thoại không được để trống'),
+        address: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+
+
+    });
+    const handleCheckOut = async () => {
+
+        console.log(phone)
+        console.log(address)
+        try {
+            await Schema.validate({ phone, address }, { abortEarly: false });
+            const token = sessionStorage.getItem('token')
+            const url = 'https://localhost:7225/api/Invoices';
+            const data = {
+                "code": "string",
+                "applicationUserId": "string",
+                "applicationUser": null,
+                "issuedDate": "2023-05-20T14:04:06.905Z",
+                "shippingAddress": address,
+                "shippingPhone": phone,
+                "total": 0,
+                "status": 1
+            }
+            console.log('ok', data)
+            axios.post(url, data, {
+                headers: { 'Authorization': `Bearer ${token}` }
             })
+                .then(() => {
+                    toast.success('Đơn hàng đang chờ xác nhận vui lòng đợi');
+                    usenavigate('/profile')
+                }).catch((error) => {
+                    toast.error(error);
+                })
+        } catch (error) {
+            const validationErrors = error.inner;
+            validationErrors.forEach((error) => {
+                toast.error(error.message);
+            });
+        }
+
     }
-    var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
+    const tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0);
+
+
     return (
 
         <Fragment>
             <ToastContainer />
             <Jquery />
-            <>
 
-                {/* Checkout Start */}
-                <div className="container-fluid">
-                    <div className="row px-xl-5">
-                        <div className="col-lg-8">
-                            <h5 className="section-title position-relative text-uppercase mb-3">
-                                <span className="bg-secondary pr-3">Địa chỉ thanh toán</span>
-                            </h5>
-                            <div className="bg-light p-30 mb-5">
-                                <div className="row">
-                                    {/* <div className="col-md-6 form-group">
+
+            {/* Checkout Start */}
+            <div className="container-fluid">
+                <div className="row px-xl-5">
+                    <div className="col-lg-8">
+                        <h5 className="section-title position-relative text-uppercase mb-3">
+                            <span className="bg-secondary pr-3">Địa chỉ thanh toán</span>
+                        </h5>
+                        <div className="bg-light p-30 mb-5">
+                            <div className="row">
+                                {/* <div className="col-md-6 form-group">
                                         <label>First Name</label>
                                         <input className="form-control" type="text" placeholder="John" />
                                     </div>
@@ -174,25 +189,25 @@ function Checkout() {
                                             placeholder="example@email.com"
                                         />
                                     </div> */}
-                                    <div className="col-md-6 form-group">
-                                        <label>Số điện thoại</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            placeholder="Nhập số điện thoại"
-                                            value={phone} onChange={(e) => SetshippingPhone(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="col-md-6 form-group">
-                                        <label>Địa chỉ</label>
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            placeholder="Nhập Địa chỉ"
-                                            value={address} onChange={(e) => SetshippingAddress(e.target.value)}
-                                        />
-                                    </div>
-                                    {/* <div className="col-md-6 form-group">
+                                <div className="col-md-6 form-group">
+                                    <label>Số điện thoại</label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="Nhập số điện thoại"
+                                        value={phone} onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                </div>
+                                <div className="col-md-6 form-group">
+                                    <label>Địa chỉ</label>
+                                    <input
+                                        className="form-control"
+                                        type="text"
+                                        placeholder="Nhập Địa chỉ"
+                                        value={address} onChange={(e) => setAddress(e.target.value)}
+                                    />
+                                </div>
+                                {/* <div className="col-md-6 form-group">
                                         <label>Address Line 2</label>
                                         <input
                                             className="form-control"
@@ -258,9 +273,9 @@ function Checkout() {
                                             </label>
                                         </div>
                                     </div> */}
-                                </div>
                             </div>
-                            {/* <div className="collapse mb-5" id="shipping-address">
+                        </div>
+                        {/* <div className="collapse mb-5" id="shipping-address">
                                 <h5 className="section-title position-relative text-uppercase mb-3">
                                     <span className="bg-secondary pr-3">Shipping Address</span>
                                 </h5>
@@ -342,15 +357,15 @@ function Checkout() {
                                     </div>
                                 </div>
                             </div> */}
-                        </div>
-                        <div className="col-lg-4">
+                    </div>
+                    <div className="col-lg-4">
 
-                            <div className="mb-5">
-                                <h5 className="section-title position-relative text-uppercase mb-3">
-                                    <span className="bg-secondary pr-3">Phương thức thanh toán</span>
-                                </h5>
-                                <div className="bg-light p-30">
-                                    <div className="form-group">
+                        <div className="mb-5">
+                            <h5 className="section-title position-relative text-uppercase mb-3">
+                                <span className="bg-secondary pr-3">Phương thức thanh toán</span>
+                            </h5>
+                            <div className="bg-light p-30">
+                                {/* <div className="form-group">
                                         <div className="custom-control custom-radio">
                                             <input
                                                 type="radio"
@@ -375,115 +390,153 @@ function Checkout() {
                                                 Vnpay
                                             </label>
                                         </div>
-                                    </div>
-                                    <button className="btn btn-block btn-primary font-weight-bold py-3" onClick={() => handleCheckOut()}>
-                                        Đặt hàng
-                                    </button>
+                                    </div> */}
+                                <button className="btn btn-block btn-primary font-weight-bold py-3 mb-3" onClick={() => handleCheckOut()}>
+                                    Thanh toán khi nhận hàng
+                                </button>
+                                <PayPalScriptProvider
+                                    options={{
+                                        "client-id": "ARl5CAahmrncZ_zkVbwJHW6tR8VbMxsUDElhwrMfAtzXQ-bygUPEQ1rYVh9p64g5_hvoxp5fWIpBrpKK",
+                                        components: "buttons",
+                                        currency: "USD"
+                                    }}
+                                >
+                                    <PayPalButtons
 
-                                </div>
+                                        currency="USD"
+                                        createOrder={(data, actions) => {
+                                            {
+                                                setAmount(total)
+                                            }
+                                            return actions.order.create({
+
+                                                purchase_units: [
+                                                    {
+                                                        amount: {
+                                                            value: total, // Sử dụng giá trị từ state amount
+                                                        },
+                                                    },
+                                                ],
+                                            });
+                                        }}
+                                        onApprove={(data, actions) => {
+                                            return actions.order.capture().then((details) => {
+                                                if (details.status === "COMPLETED") {
+                                                    getData();
+                                                    getUser();
+                                                    console.log('ok', phone)
+                                                    console.log('ok', address)
+                                                    handleCheckOut();
+                                                    console.log(details)
+                                                }
+                                            });
+                                        }}
+                                    />
+                                </PayPalScriptProvider>
+
                             </div>
                         </div>
-                        <div className="row px-xl-4">
-                            <div className="col-lg-8">
-                                <h5 className="section-title position-relative text-uppercase mb-3">
-                                    <span className="bg-secondary pr-3">
-                                        Xem lại giỏ hàng
-                                    </span>
-                                </h5>
-                                <table className="table table-light table-borderless table-hover text-center mb-0">
-                                    <thead className="thead-dark">
-                                        <tr>
-                                            <th></th>
-                                            <th>Sản phẩm</th>
-                                            <th>Giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Tổng tiền</th>
-                                            <th>Remove</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="align-middle">
-                                        {
-
-                                            data.map((item, Index) => {
-                                                return (
-
-                                                    <tr key={Index}>
-                                                        <td className="align-middle">
-                                                            <img src={`../ASSETS/image/${item.product.image}`} alt="" style={{ width: 200 }} />{" "}
-
-                                                        </td>
-                                                        <td className="align-middle">{item.product.name}</td>
-                                                        <td className="align-middle">{VND.format((item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
-                                                        <td className="align-middle">
-                                                            <div
-                                                                className="input-group quantity mx-auto"
-                                                                style={{ width: 100 }}
-                                                            >
-                                                                <div className="input-group-btn">
-                                                                    <button className="btn btn-sm btn-primary btn-minus" onClick={() => handleupdatequantityincrease(item)}>
-                                                                        <i className="fa fa-minus" />
-                                                                    </button>
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    className="form-control form-control-sm bg-secondary border-0 text-center"
-                                                                    Value={item.quantity}
-                                                                />
-
-                                                                <div className="input-group-btn">
-                                                                    <button className="btn btn-sm btn-primary btn-plus" onClick={() => handleupdatequantitydecrease(item)}>
-                                                                        <i className="fa fa-plus" />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="align-middle" >{VND.format(item.quantity * (item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
-                                                        <td className="align-middle">
-                                                            <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
-                                                                <i className="fa fa-times" />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-
-                                        }
-
-                                    </tbody>
-
-                                </table>
-                            </div>
-                            <div className="col-lg-4">
-                                <h5 className="section-title position-relative text-uppercase mb-3">
-                                    <span className="bg-secondary pr-3">TÓM TẮT Giỏ hàng</span>
-                                </h5>
-                                <div className="bg-light p-30 mb-5">
-                                    <div className="border-bottom pb-2">
-                                        <div className="d-flex justify-content-between mb-3">
-                                            <h6>Tổng tiền phụ</h6>
-                                            <h6>{VND.format(tong)}</h6>
-                                        </div>
-                                        <div className="d-flex justify-content-between">
-                                            <h6 className="font-weight-medium">Phí vận chuyển</h6>
-                                            <h6 className="font-weight-medium">{VND.format(0)}</h6>
-                                        </div>
-                                    </div>
-                                    <div className="pt-2">
-                                        <div className="d-flex justify-content-between mt-2">
-                                            <h5>Tổng tiền</h5>
-                                            <h5>{VND.format(tong)}</h5>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                </div>
-                {/* Checkout End */}
+                    <div className="row px-xl-4">
+                        <div className="col-lg-8">
+                            <h5 className="section-title position-relative text-uppercase mb-3">
+                                <span className="bg-secondary pr-3">
+                                    Xem lại giỏ hàng
+                                </span>
+                            </h5>
+                            <table className="table table-light table-borderless table-hover text-center mb-0">
+                                <thead className="thead-dark">
+                                    <tr>
+                                        <th></th>
+                                        <th>Sản phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="align-middle">
+                                    {
 
-            </>
+                                        data.map((item, Index) => {
+                                            return (
+
+                                                <tr key={Index}>
+                                                    <td className="align-middle">
+                                                        <img src={item.product.image} alt="" style={{ width: 100 }} />{" "}
+
+                                                    </td>
+                                                    <td className="align-middle">{item.product.name}</td>
+                                                    <td className="align-middle">{VND.format((item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
+                                                    <td className="align-middle">
+                                                        <div
+                                                            className="input-group quantity mx-auto"
+                                                            style={{ width: 100 }}
+                                                        >
+                                                            <div className="input-group-btn">
+                                                                <button className="btn btn-sm btn-primary btn-minus" onClick={() => handleupdatequantityincrease(item)}>
+                                                                    <i className="fa fa-minus" />
+                                                                </button>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm bg-secondary border-0 text-center"
+                                                                Value={item.quantity}
+                                                            />
+
+                                                            <div className="input-group-btn">
+                                                                <button className="btn btn-sm btn-primary btn-plus" onClick={() => handleupdatequantitydecrease(item)}>
+                                                                    <i className="fa fa-plus" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="align-middle" >{VND.format(item.quantity * (item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
+                                                    <td className="align-middle">
+                                                        <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
+                                                            <i className="fa fa-times" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div className="col-lg-4">
+                            <h5 className="section-title position-relative text-uppercase mb-3">
+                                <span className="bg-secondary pr-3">TÓM TẮT Giỏ hàng</span>
+                            </h5>
+                            <div className="bg-light p-30 mb-5">
+                                <div className="border-bottom pb-2">
+                                    <div className="d-flex justify-content-between mb-3">
+                                        <h6>Tổng tiền phụ</h6>
+                                        <h6>{VND.format(tong)}</h6>
+                                    </div>
+                                    <div className="d-flex justify-content-between">
+                                        <h6 className="font-weight-medium">Phí vận chuyển</h6>
+                                        <h6 className="font-weight-medium">{VND.format(0)}</h6>
+                                    </div>
+                                </div>
+                                <div className="pt-2">
+                                    <div className="d-flex justify-content-between mt-2">
+                                        <h5>Tổng tiền</h5>
+                                        <h5>{VND.format(tong)}</h5>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {/* Checkout End */}
+
 
         </Fragment>
     )

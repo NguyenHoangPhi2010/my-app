@@ -15,7 +15,8 @@ const Account = () => {
     const [fullname, setFullName] = useState('')
     const [phone, setPhone] = useState('')
     const [email, setEmail] = useState('')
-    const [address, setAddress] = useState('')
+    const [address1, setAddress1] = useState('')
+    const [address2, setAddress2] = useState('')
 
     const [editID, setEditId] = useState('');
     const [data, setData] = useState([]);
@@ -24,6 +25,7 @@ const Account = () => {
     const [disabledE, setDisabledE] = useState(true);
     const [disabledP, setDisabledP] = useState(true);
     const [disabledA, setDisabledA] = useState(true);
+    const [disabledA1, setDisabledA1] = useState(true);
     const [password, setPassWord] = useState('')
     const [passwordNew, setPassWordNew] = useState('')
     const [passwordS, setPassWordS] = useState('')
@@ -41,6 +43,9 @@ const Account = () => {
     const editAddress = () => {
         setDisabledA(!disabledA);
     };
+    const editAddress1 = () => {
+        setDisabledA1(!disabledA1);
+    };
     const editEmail = () => {
         setDisabledE(!disabledE);
     };
@@ -54,7 +59,8 @@ const Account = () => {
                 setData(result.data)
                 setUserName(result.data.userName)
                 setFullName(result.data.fullName)
-                setAddress(result.data.address)
+                setAddress1(result.data.address1)
+                setAddress2(result.data.address2)
                 setEmail(result.data.email)
                 setPhone(result.data.phoneNumber)
             })
@@ -94,7 +100,9 @@ const Account = () => {
         email: Yup.string()
             .required('Email không được để trống')
             .email('Invalid email address'),
-        address: Yup.string()
+        address1: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+        address2: Yup.string()
             .required('Địa chỉ không được để trống không được để trống'),
         fullname: Yup.string()
             .required('Họ và tên(đầy đủ) không được để trống')
@@ -104,10 +112,11 @@ const Account = () => {
     const handleUpdate = async () => {
 
         try {
-            await Schema.validate({ phone, email, address, fullname }, { abortEarly: false });
+            await Schema.validate({ phone, email, address1, address2, fullname }, { abortEarly: false });
             const url = `https://localhost:7225/api/Accounts/${editID}`;
             const data1 = {
-                "address": address,
+                "address1": address1,
+                "address2": address2,
                 "fullName": fullname,
                 "avatar": data.avatar,
                 "status": data.status,
@@ -191,7 +200,7 @@ const Account = () => {
 
                 <div className="col-12 ">
                     <div className="card">
-                        <h5 className="mt-5" style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
+                        <h5 className="mt-5" style={{ paddingLeft: '50px', }}>Thông tin tài khoản</h5>
                         <div className="row  mb-41">
                             <div className=" col-md-8 mb-auto">
                                 <div className="forms-group">
@@ -284,14 +293,14 @@ const Account = () => {
                                         htmlFor="example-text-input"
                                         className="forms-control-label"
                                     >
-                                        Đia chỉ:
+                                        Đia chỉ 1:
                                     </label>
                                     <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
                                         <textarea
                                             rows={3}
                                             className="forms-control"
                                             placeholder="Nhập thông tin của màn hình"
-                                            value={address} onChange={(e) => setAddress(e.target.value)}
+                                            value={address1} onChange={(e) => setAddress1(e.target.value)}
                                             disabled={disabledA}
                                         />
                                         <button className="btn btn-icon" onClick={() => editAddress()}>
@@ -300,7 +309,28 @@ const Account = () => {
                                     </div>
                                 </div>
                             </div>
-
+                            <div className="col-md-8 mb-auto">
+                                <div className="forms-group">
+                                    <label
+                                        htmlFor="example-text-input"
+                                        className="forms-control-label"
+                                    >
+                                        Đia chỉ 2:
+                                    </label>
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <textarea
+                                            rows={3}
+                                            className="forms-control"
+                                            placeholder="Nhập thông tin của màn hình"
+                                            value={address2} onChange={(e) => setAddress2(e.target.value)}
+                                            disabled={disabledA1}
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editAddress1()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="col-md-8 mb-auto mt-2 my-2">
                                 <button className="forms-control mb-2" onClick={
                                     () => { handleShow() }}>Đổi mật khẩu
