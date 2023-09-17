@@ -123,80 +123,7 @@ function Header() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const result = getSearch(searchQuery);
-        if (result) {
-            search.map((item) => {
-                return (
-                    <div className="hot-deal-active col-lg-4 col-md-4 col-sm-6 col-6">
-                        <div className="single-product">
-                            <div className="pro-img">
-                                <a href="product.html">
-                                    <img
-                                        className="primary-img"
-                                        src={item.image.path1}
-                                        alt="single-product"
-                                    />
-                                    <img
-                                        className="secondary-img"
-                                        src={item.image.path5}
-                                        alt="single-product"
-                                    />
-                                </a>
-                                <div className="countdown" data-countdown="2030/03/01" />
-                                <a
-                                    href="/#"
-                                    className="quick_view"
-                                    data-toggle="modal"
-                                    data-target="/#myModal"
-                                    title="Quick View"
-                                >
-                                    <i className="lnr lnr-magnifier" />
-                                </a>
-                            </div>
 
-                            <div className="pro-content">
-                                <div className="pro-info">
-                                    <h4>
-                                        <a href="product.html">{item.name}</a>
-                                    </h4>
-                                    <p>
-                                        <span className="price">{VND.format(item.price)}</span>
-                                        <del className="prev-price">
-                                            {item.price - item.price * 0.2}
-                                        </del>
-                                    </p>
-                                    <div className="label-product l_sale">
-                                        20<span className="symbol-percent">%</span>
-                                    </div>
-                                    {/* <Rating value={item.rating} /> */}
-                                </div>
-                                <div className="pro-actions">
-                                    <div className="actions-primary">
-                                        <Link to={`/shop/${item.id}`}>
-                                            + Clik to view {item.id}
-                                        </Link>
-                                    </div>
-                                    <div className="actions-primary">
-                                        <a onClick={() => handleAddtoCart(item)} title="Add to Cart">
-                                            + Add To Cart
-                                        </a>
-                                    </div>
-                                    <div className="actions-secondary">
-                                        <a href="compare.html" title="Compare">
-                                            <i className="lnr lnr-sync" />
-                                            <span>Add To Compare</span>
-                                        </a>
-                                        <a href="wishlist.html" title="WishList">
-                                            <i className="lnr lnr-heart" />
-                                            <span>Add to WishList</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            });
-        }
     };
     const VND = new Intl.NumberFormat("vi-VN", {
         style: "currency",
@@ -245,7 +172,7 @@ function Header() {
                 </div>
                 <Link className="dropdown-item" to={"/myaccount"} type="button">
                     <h6 className="fa fa-user-circle text-black-50 mr-2 " />
-                    Profile
+                    Trang cá nhân
                 </Link>
 
                 <button className="dropdown-item" type="button" onClick={() => handleSighOut()}>
@@ -338,7 +265,7 @@ function Header() {
                     <div className="col-lg-4">
                         <Link className="text-decoration-none" to="/">
                             <span className="h1 text-uppercase text-primary bg-dark px-2">
-                                Multi
+                                Laptoptp
                             </span>
                             <span className="h1 text-uppercase text-dark bg-primary px-2 ml-n1">
                                 Shop
@@ -364,7 +291,7 @@ function Header() {
                                                 autoComplete="off"
                                             />
                                             <button className="bg-transparent text-primary" >
-                                                <NavLink className="fa fa-search " to={`../shop/${searchQuery}`}></NavLink>
+                                                <Link className="fa fa-search " to={`../shop/${searchQuery}`}></Link>
                                             </button>
                                         </form>
                                         <ul className="ht-dropdown search-box-width">
@@ -378,7 +305,7 @@ function Header() {
                                                                     <div className="cart-img">
                                                                         <a href="/#">
                                                                             <img
-                                                                                src={`../ASSETS/image/${item.image}`}
+                                                                                src={item.image}
                                                                                 alt="cart-image"
                                                                             />
                                                                         </a>
@@ -471,7 +398,7 @@ function Header() {
                                     <Link className="nav-item nav-link" to="/">Trang chủ</Link>
                                     <Link className="nav-item nav-link" to="/shop">Sản phẩm</Link>
                                     <Link className="nav-item nav-link" to="/cart">Giỏ hàng</Link>
-                                    <Link className="nav-item nav-link" to="/contact">Hổ trợ</Link>
+                                    <Link className="nav-item nav-link" to="/contact">Hỗ trợ</Link>
 
 
                                 </div>
@@ -499,7 +426,7 @@ function Header() {
                                                                         <div className="cart-img">
                                                                             <a href="/#">
                                                                                 <img
-                                                                                    src={`../ASSETS/image/${item.product.image}`}
+                                                                                    src={item.product.image}
                                                                                     alt="cart-image"
                                                                                 />
                                                                             </a>

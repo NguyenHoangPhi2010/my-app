@@ -11,7 +11,7 @@ function Cart() {
   useEffect(() => {
     getData();
     setCount(0)
-  }, [params, count])
+  }, [params])
   const usenavigate = useNavigate();
   const getData = () => {
     const token = sessionStorage.getItem('token')
@@ -60,7 +60,7 @@ function Cart() {
       "quantity": item.quantity - 1
     }
     if (data.quantity <= 0) {
-      handleDelect(data.id)
+      toast.error("Giá trị đã giảm xuống mức tối thiểu")
     } else {
       axios.put(url, data)
         .then(() => {
@@ -85,14 +85,15 @@ function Cart() {
         })
     }
   }
+  var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
   const handleCheckOut = () => {
     if (data.length === 0) {
       toast.error("Giỏ hàng lỏng");
     } else {
-      usenavigate('/checkout')
+      usenavigate(`/checkout/${((tong / 23000).toFixed())}`)
     }
   }
-  var tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0)
+
   return (
     <Fragment>
       <ToastContainer />
@@ -141,7 +142,7 @@ function Cart() {
 
                             <tr key={Index}>
                               <td className="align-middle">
-                                <img src={`../ASSETS/image/${item.product.image}`} alt="" style={{ width: 70 }} />{" "}
+                                <img src={item.product.image} style={{ width: 70 }} />{" "}
 
                               </td>
                               <td>{item.product.name}</td>

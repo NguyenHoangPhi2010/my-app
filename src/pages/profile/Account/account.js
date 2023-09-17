@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import * as Yup from 'yup';
 import { Modal } from "react-bootstrap";
@@ -11,12 +11,15 @@ const Account = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => { setShow(false); }
     const handleShow = () => setShow(true);
+    const [showAddress, setShowAddress] = useState(false);
+    const handleCloseAddress = () => { setShow(false); }
+    const handleShowAddress = () => setShow(true);
     const [userName, setUserName] = useState('')
     const [fullname, setFullName] = useState('')
     const [phone, setPhone] = useState('')
     const [email, setEmail] = useState('')
-    const [address, setAddress] = useState('')
-
+    const [address1, setAddress1] = useState('')
+    const [address2, setAddress2] = useState('')
     const [editID, setEditId] = useState('');
     const [data, setData] = useState([]);
     const [datainvoice, setDataInVoice] = useState([]);
@@ -24,13 +27,21 @@ const Account = () => {
     const [disabledE, setDisabledE] = useState(true);
     const [disabledP, setDisabledP] = useState(true);
     const [disabledA, setDisabledA] = useState(true);
+    const [disabledA1, setDisabledA1] = useState(true);
     const [password, setPassWord] = useState('')
     const [passwordNew, setPassWordNew] = useState('')
     const [passwordS, setPassWordS] = useState('')
+    const [editcyti, setEditCyti] = useState([]);
+    const [editdistrict, setEditDistrict] = useState([])
+    const [editward, setEditWard] = useState([])
+    const [editaddress, setEditAddress] = useState('')
+    const [dataTrue, setDataTrue] = useState([]);
     const usenavigate = useNavigate();
     useEffect(() => {
         getData();
         getDataInvoice();
+        getaccountaddress();
+        getDataStatus();
     }, [])
     const editFullName = () => {
         setDisabledFN(!disabledFN);
@@ -40,6 +51,9 @@ const Account = () => {
     };
     const editAddress = () => {
         setDisabledA(!disabledA);
+    };
+    const editAddress1 = () => {
+        setDisabledA1(!disabledA1);
     };
     const editEmail = () => {
         setDisabledE(!disabledE);
@@ -54,7 +68,8 @@ const Account = () => {
                 setData(result.data)
                 setUserName(result.data.userName)
                 setFullName(result.data.fullName)
-                setAddress(result.data.address)
+                setAddress1(result.data.address1)
+                setAddress2(result.data.address2)
                 setEmail(result.data.email)
                 setPhone(result.data.phoneNumber)
             })
@@ -79,7 +94,7 @@ const Account = () => {
         }
 
     }
-    var tong = datainvoice.reduce((a, v) => a = a + v.total, 0)
+    var tong = dataTrue.reduce((a, v) => a = a + v.total, 0)
     const passwordSchema = Yup.string()
         .required('Mật khẩu không được để tróng')
         .min(8, 'Mật khẩu phải dài ít nhất 8 ký tự')
@@ -94,8 +109,6 @@ const Account = () => {
         email: Yup.string()
             .required('Email không được để trống')
             .email('Invalid email address'),
-        address: Yup.string()
-            .required('Địa chỉ không được để trống không được để trống'),
         fullname: Yup.string()
             .required('Họ và tên(đầy đủ) không được để trống')
             .max(50, 'Họ và tên(đầy đủ) quá dài'),
@@ -104,10 +117,11 @@ const Account = () => {
     const handleUpdate = async () => {
 
         try {
-            await Schema.validate({ phone, email, address, fullname }, { abortEarly: false });
+            await Schema.validate({ phone, email, fullname }, { abortEarly: false });
             const url = `https://localhost:7225/api/Accounts/${editID}`;
             const data1 = {
-                "address": address,
+                "address1": address1,
+                "address2": address2,
                 "fullName": fullname,
                 "avatar": data.avatar,
                 "status": data.status,
@@ -132,6 +146,7 @@ const Account = () => {
                     getData();
                     setDisabledE(true);
                     setDisabledA(true);
+                    setDisabledA1(true);
                     setDisabledFN(true);
                     setDisabledP(true)
                     toast.success('Đã thay đổi thành công');
@@ -147,6 +162,7 @@ const Account = () => {
         }
 
     }
+
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -184,6 +200,40 @@ const Account = () => {
 
 
     }
+    const getaccountaddress = async () => {
+        const token = sessionStorage.getItem('token')
+        await axios.get('https://localhost:7225/api/AccountAddresss/GetAccountAddressDefault', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+
+
+                setEditCyti(result.data.cyti);
+                setEditDistrict(result.data.district);
+                setEditWard(result.data.ward);
+                setEditAddress(result.data.address);
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+    const getDataStatus = () => {
+        const token = sessionStorage.getItem('token')
+        if (token == null) {
+            console.log("Cart null")
+        } else {
+            axios.get('https://localhost:7225/api/Invoices/GetInvoicesStatus', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+                .then((result) => {
+                    setDataTrue(result.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
+
+    }
     return (
         <Fragment>
             <ToastContainer />
@@ -191,7 +241,7 @@ const Account = () => {
 
                 <div className="col-12 ">
                     <div className="card">
-                        <h5 className="mt-5" style={{ paddingLeft: '50px', }}>Thông tin tài khoảng</h5>
+                        <h5 className="mt-5" style={{ paddingLeft: '50px', }}>Thông tin tài khoản</h5>
                         <div className="row  mb-41">
                             <div className=" col-md-8 mb-auto">
                                 <div className="forms-group">
@@ -278,30 +328,30 @@ const Account = () => {
 
                                 </div>
                             </div>
+
                             <div className="col-md-8 mb-auto">
                                 <div className="forms-group">
                                     <label
                                         htmlFor="example-text-input"
                                         className="forms-control-label"
                                     >
-                                        Đia chỉ:
+                                        Đia chỉ :
                                     </label>
                                     <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
                                         <textarea
-                                            rows={3}
+                                            rows={1}
                                             className="forms-control"
                                             placeholder="Nhập thông tin của màn hình"
-                                            value={address} onChange={(e) => setAddress(e.target.value)}
-                                            disabled={disabledA}
+                                            value={editaddress + "," + editward + "," + editdistrict + "," + editcyti}
+                                            disabled={disabledA1}
                                         />
-                                        <button className="btn btn-icon" onClick={() => editAddress()}>
+                                        <Link className="btn btn-icon" to={"../accountaddress"}>
                                             <i className="fa fa-wrench" />
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="col-md-8 mb-auto mt-2 my-2">
+                            <div className="col-md-8 mb-auto mt-3">
                                 <button className="forms-control mb-2" onClick={
                                     () => { handleShow() }}>Đổi mật khẩu
                                 </button>
@@ -365,6 +415,23 @@ const Account = () => {
                 <Modal.Footer>
                     <button className="btn btn-primary formss-control" onClick={
                         () => { handleChangePassWord() }}>Xác nhận
+                    </button>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showAddress} onHide={handleCloseAddress} className="container-fluid mt-5">
+                <Modal.Header >
+                    <Modal.Title>Tạo mật khẩu mới
+                    </Modal.Title>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleCloseAddress()}>
+                        <i className="fa fa-times" />
+                    </button>
+                </Modal.Header>
+                <Modal.Body >
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <button className="btn btn-primary formss-control" onClick={
+                        () => { }}>Xác nhận
                     </button>
                 </Modal.Footer>
             </Modal>

@@ -62,13 +62,12 @@ const Login = () => {
             }).then((resp) => {
                 //console.log(resp)
                 if (resp.status === 401) {
-                    toast.error('Login failed, invalid credentials');
+                    toast.error('Đăng nhập thất bại');
                 } else {
-                    toast.success('Success');
                     sessionStorage.setItem('username', username);
                     sessionStorage.setItem('token', resp.token);
                     usenavigate('/')
-
+                    toast.success('Đăng nhập thành công');
                 }
                 // if (Object.keys(resp).length === 0) {
                 //     toast.error('Please Enter valid username');
@@ -90,11 +89,11 @@ const Login = () => {
         let result = true;
         if (username === '' || username === null) {
             result = false;
-            toast.warning('Please Enter Username');
+            toast.warning('Vui lòng nhập tài khoản');
         }
         if (password === '' || password === null) {
             result = false;
-            toast.warning('Please Enter Password');
+            toast.warning('Vui lòng nhập mật khẩu');
         }
         return result;
     }
@@ -161,6 +160,7 @@ const Login = () => {
                                         </div>
                                     </div>
                                 </form>
+
                                 <div className="form-check form-check-info text-start">
 
                                     <label
@@ -173,6 +173,22 @@ const Login = () => {
                                             className="text-dark font-weight-bolder"
                                         >
                                             <Link to='/signup'>Tại Đây</Link>
+
+                                        </a>
+                                    </label>
+                                </div>
+                                <div className="form-check form-check-info text-start">
+
+                                    <label
+                                        className="form-check-label text-left"
+                                        htmlFor="flexCheckDefault"
+                                    >
+                                        Bạn đã quên mật Khẩu.
+                                        <a
+                                            href="javascript:;"
+                                            className="text-dark font-weight-bolder"
+                                        >
+                                            <Link > Lấy lại mật Khẩu</Link>
 
                                         </a>
                                     </label>

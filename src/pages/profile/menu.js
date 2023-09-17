@@ -35,7 +35,7 @@ function Menu() {
                             style={{ padding: 5 }}
                         >
                             <h2 className="fa fa-user-circle text-black-50 mr-2 " />
-                            <h5 className="font-weight-semi-bold m-0">Thông tin tài khoảng</h5>
+                            <h5 className="font-weight-semi-bold m-0">Thông tin tài khoản</h5>
                         </div>
                     </Nav.Link>
                 </Nav.Item>
