@@ -40,11 +40,14 @@ function Index() {
         axios.get('https://localhost:7225/api/Banners')
             .then((result) => {
                 setDataBanner(result.data)
+<<<<<<< HEAD
                 setImage1(result.data[0].image)
                 setImage2(result.data[1].image)
                 setImage3(result.data[2].image)
                 setImage4(result.data[3].image)
                 setImage5(result.data[4].image)
+=======
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             })
             .catch((error) => {
                 console.log(error)
@@ -184,8 +187,12 @@ function Index() {
             </div>
             {/* Breadcrumb End */}
             {/* Carousel Start */}
+<<<<<<< HEAD
 
 
+=======
+            <div></div>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             <div className="container-fluid mb-3">
                 <div className="row px-xl-5">
                     <div className="col-lg-8">
@@ -210,7 +217,11 @@ function Index() {
                                 >
                                     <img
                                         className="position-absolute w-100 h-100"
+<<<<<<< HEAD
                                         src={image1}
+=======
+                                        src="ASSETS/img/3.jpg"
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                         style={{ objectFit: "fill" }}
                                     />
 
@@ -221,7 +232,11 @@ function Index() {
                                 >
                                     <img
                                         className="position-absolute w-100 h-100"
+<<<<<<< HEAD
                                         src={image2}
+=======
+                                        src="ASSETS/img/4.jpg"
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                         style={{ objectFit: 'fill' }}
                                     />
 
@@ -232,7 +247,11 @@ function Index() {
                                 >
                                     <img
                                         className="position-absolute  w-100 h-100"
+<<<<<<< HEAD
                                         src={image3}
+=======
+                                        src="ASSETS/img/5.jpg"
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                         style={{ objectFit: 'fill' }}
                                     />
 
@@ -242,7 +261,11 @@ function Index() {
                     </div>
                     <div className="col-lg-4">
                         <div className="product-offer mb-30" style={{ height: 200 }}>
+<<<<<<< HEAD
                             <img className="img-fluid" src={image4} alt="" />
+=======
+                            <img className="img-fluid" src="ASSETS/img/4.jpg" alt="" />
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                             {/* <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h4>
                                     <h3 className="text-white mb-3">Special Offer</h3>
@@ -252,7 +275,11 @@ function Index() {
                                 </div> */}
                         </div>
                         <div className="product-offer mb-30" style={{ height: 200 }}>
+<<<<<<< HEAD
                             <img className="img-fluid" src={image5} alt="" />
+=======
+                            <img className="img-fluid" src="ASSETS/img/5.jpg" alt="" />
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                             {/* <div className="offer-text">
                                     <h6 className="text-white text-uppercase">Save 20%</h4>
                                     <h3 className="text-white mb-3">Special Offer</h3>
@@ -264,9 +291,12 @@ function Index() {
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             {/* Carousel End */}
             {/* Featured Start */}
             <div className="container-fluid pt-5">

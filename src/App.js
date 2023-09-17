@@ -21,7 +21,10 @@ import SignUp from "./pages/signup";
 import ProductLike from "./pages/profile/productlike";
 import PasswordResetLink, { DonateApp } from "./pages/PasswordResetLink";
 import PayPalButton from "./pages/PasswordResetLink";
+<<<<<<< HEAD
 import AccountAddress from "./pages/profile/Account/accountAddress";
+=======
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
 
 function App() {
   const UserLayout = () => (
@@ -47,7 +50,12 @@ function App() {
             <Route path='/cart' element={<Cart />} />
             <Route path='/checkout/:total' element={<Checkout />} />
             <Route path='/contact' element={<Contact />} />
+<<<<<<< HEAD
 
+=======
+            <Route path='/product' element={<Productad />} />
+            <Route path='/producttype' element={<ProductTypead />} />
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             <Route path='/profile' element={<Profile />} />
             <Route path='/myaccount' element={<MyAccount />} />
             <Route path='/productlike' element={<ProductLike />} />
@@ -56,7 +64,10 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<SignUp />} />
             <Route path='/account' element={<Account />} />
+<<<<<<< HEAD
             <Route path='/accountaddress' element={<AccountAddress />} />
+=======
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
 
           </Route>
           <Route path='/paypal' element={<DonateApp />} />

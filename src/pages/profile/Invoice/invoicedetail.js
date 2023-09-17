@@ -75,9 +75,15 @@ function InvoiceDetails() {
             })
     }
     const editinvoid = () => {
+<<<<<<< HEAD
         if (window.confirm("Bạn có chắc muốn hủy đơn hàng") === true) {
             if (data.status === 5) {
                 toast.error("Đơn hàng của bạn đã bị hủy trước đó");
+=======
+        if (window.confirm("Bạn có chắc muốn hũy đơn hàng") === true) {
+            if (data.status === 5) {
+                toast.error("Đơn hàng của bạn đã bị hũy trước đó");
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             } else if (data.status === 4) {
                 toast.error("Đơn hàng đã giao không được hủy");
             } else if (data.status === 2) {
@@ -169,8 +175,14 @@ function InvoiceDetails() {
         })
             .then((result) => {
                 toast.success(result.data.message);
+<<<<<<< HEAD
                 handleClose();
 
+=======
+                setCount(count + 1);
+                handleClose();
+                clear();
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                 console.log(result)
             }).catch((error) => {
                 toast.error(error);
@@ -401,12 +413,23 @@ function InvoiceDetails() {
                                                     </div> */}
                                 <div className=" text-center align-middle mb-0">
 
+<<<<<<< HEAD
                                     <a className="btn btn-secondary mr-2 " onClick={() => handleClose()}>
                                         <p className="text-center pr-4 pl-4" > Hũy bỏ</p>
                                     </a>
                                     <a className="btn btn-primary mr-2" onClick={() => { handleReview(dataproduct) }}>
                                         <p className="text-center pr-4 pl-4" > Đánh giá</p>
                                     </a>
+=======
+                                        defaultValue="Hũy bỏ"
+                                        className="btn btn-secondary mr-2 px-3"
+                                        onClick={() => handleClose()}
+                                    />
+
+                                    <button className="btn btn-primary px-3" onClick={() => { handleReview(dataproduct) }}>
+                                        <p className="text-center pr-4 pl-4" > Đánh giá</p>
+                                    </button>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                 </div>
                             </form>
                         </div>

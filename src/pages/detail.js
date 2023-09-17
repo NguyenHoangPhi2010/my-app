@@ -48,7 +48,11 @@ function Detail() {
     const handquantitydecrease = () => {
         setQuantity(quantityAsNumber - 1)
         if (quantity <= 1) {
+<<<<<<< HEAD
             toast.error("Giá trị đã giảm xuống mức tối thiểu")
+=======
+            toast.error('số lượng không được nhỏ hơn 0')
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             setQuantity(1)
             console.log('sos', quantity)
             console.log('ksks', quantityAsNumber)
@@ -538,9 +542,15 @@ function Detail() {
                                                     </div> */}
                                                 <div className="form-group  ">
 
+<<<<<<< HEAD
                                                     <a className="btn btn-primary" onClick={() => handleReview(data)}>
                                                         <i className="text-center pr-4 pl-4" > Đánh giá</i>
                                                     </a>
+=======
+                                                    <button className="btn btn-primary" onClick={() => handleReview(data)}>
+                                                        <i className="text-center pr-4 pl-4" > Đánh giá</i>
+                                                    </button>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                                 </div>
                                             </form>
                                         </div>

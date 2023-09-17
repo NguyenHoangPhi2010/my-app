@@ -37,6 +37,7 @@ function Invoice() {
         }
 
     }
+<<<<<<< HEAD
     const getDataStatus = () => {
         const token = sessionStorage.getItem('token')
         if (token == null) {
@@ -54,6 +55,8 @@ function Invoice() {
         }
 
     }
+=======
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     console.log('data', data)
     const renderStatus = (item) => {
         if (item.status === 1) {

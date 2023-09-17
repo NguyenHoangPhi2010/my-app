@@ -20,6 +20,10 @@ const Account = () => {
     const [email, setEmail] = useState('')
     const [address1, setAddress1] = useState('')
     const [address2, setAddress2] = useState('')
+<<<<<<< HEAD
+=======
+
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     const [editID, setEditId] = useState('');
     const [data, setData] = useState([]);
     const [datainvoice, setDataInVoice] = useState([]);
@@ -109,6 +113,13 @@ const Account = () => {
         email: Yup.string()
             .required('Email không được để trống')
             .email('Invalid email address'),
+<<<<<<< HEAD
+=======
+        address1: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+        address2: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
         fullname: Yup.string()
             .required('Họ và tên(đầy đủ) không được để trống')
             .max(50, 'Họ và tên(đầy đủ) quá dài'),
@@ -117,7 +128,11 @@ const Account = () => {
     const handleUpdate = async () => {
 
         try {
+<<<<<<< HEAD
             await Schema.validate({ phone, email, fullname }, { abortEarly: false });
+=======
+            await Schema.validate({ phone, email, address1, address2, fullname }, { abortEarly: false });
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             const url = `https://localhost:7225/api/Accounts/${editID}`;
             const data1 = {
                 "address1": address1,
@@ -335,15 +350,24 @@ const Account = () => {
                                         htmlFor="example-text-input"
                                         className="forms-control-label"
                                     >
+<<<<<<< HEAD
                                         Đia chỉ :
+=======
+                                        Đia chỉ 1:
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                     </label>
                                     <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
                                         <textarea
                                             rows={1}
                                             className="forms-control"
                                             placeholder="Nhập thông tin của màn hình"
+<<<<<<< HEAD
                                             value={editaddress + "," + editward + "," + editdistrict + "," + editcyti}
                                             disabled={disabledA1}
+=======
+                                            value={address1} onChange={(e) => setAddress1(e.target.value)}
+                                            disabled={disabledA}
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                         />
                                         <Link className="btn btn-icon" to={"../accountaddress"}>
                                             <i className="fa fa-wrench" />
@@ -351,7 +375,33 @@ const Account = () => {
                                     </div>
                                 </div>
                             </div>
+<<<<<<< HEAD
                             <div className="col-md-8 mb-auto mt-3">
+=======
+                            <div className="col-md-8 mb-auto">
+                                <div className="forms-group">
+                                    <label
+                                        htmlFor="example-text-input"
+                                        className="forms-control-label"
+                                    >
+                                        Đia chỉ 2:
+                                    </label>
+                                    <div className="d-flex justify-content-lg-end justify-content-center align-items-center">
+                                        <textarea
+                                            rows={3}
+                                            className="forms-control"
+                                            placeholder="Nhập thông tin của màn hình"
+                                            value={address2} onChange={(e) => setAddress2(e.target.value)}
+                                            disabled={disabledA1}
+                                        />
+                                        <button className="btn btn-icon" onClick={() => editAddress1()}>
+                                            <i className="fa fa-wrench" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-8 mb-auto mt-2 my-2">
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                 <button className="forms-control mb-2" onClick={
                                     () => { handleShow() }}>Đổi mật khẩu
                                 </button>

@@ -6,10 +6,18 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
+<<<<<<< HEAD
 import AccountAddress from "./profile/Account/accountAddress";
+=======
+
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
 function Checkout() {
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('')
+<<<<<<< HEAD
+=======
+    const [editID, setEditId] = useState('');
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     const params = useParams();
     const [data, setData] = useState([]);
     const [user, setUser] = useState([]);
@@ -35,13 +43,25 @@ function Checkout() {
     useEffect(() => {
         getUser();
         getData();
+<<<<<<< HEAD
         getCyti();
         getaccountaddress()
     }, [])
+=======
+        console.log(phone)
+        console.log(address)
+    }, [address, phone])
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     const token = sessionStorage.getItem('token')
     const getData = async () => {
 
         await axios.get('https://localhost:7225/api/Carts', {
+<<<<<<< HEAD
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                setData(result.data)
+=======
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then((result) => {
@@ -51,6 +71,26 @@ function Checkout() {
                 console.log(error)
             })
     }
+    const getUser = () => {
+        axios.get('https://localhost:7225/api/Accounts/GetUser', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+            .then((result) => {
+                setEditId(result.data.id)
+                setDataUser(result.data)
+                setUserName(result.data.userName)
+                setFullName(result.data.fullName)
+                setAddress(result.data.address1)
+                setEmail(result.data.email)
+                setPhone(result.data.phoneNumber)
+
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+<<<<<<< HEAD
     const getUser = async () => {
         await axios.get('https://localhost:7225/api/Accounts/GetUser', {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -67,6 +107,9 @@ function Checkout() {
             })
     }
 
+=======
+
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     const VND = new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -122,6 +165,7 @@ function Checkout() {
         phone: Yup.string()
             .matches(/^[0-9]{10}$/, 'Số điện thoại không hợp lệ')
             .required('Số điện thoại không được để trống'),
+<<<<<<< HEAD
         editaddress: Yup.string()
             .required('Địa chỉ không được để trống'),
         editcyti: Yup.string()
@@ -130,12 +174,24 @@ function Checkout() {
             .required('Quận,huyện không được để trống'),
         editward: Yup.string()
             .required('Phường, Xã không được để trống'),
+=======
+        address: Yup.string()
+            .required('Địa chỉ không được để trống không được để trống'),
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
 
 
     });
     const handleCheckOut = async () => {
+<<<<<<< HEAD
         try {
             await Schema.validate({ phone, editaddress, editcyti, editdistrict, editward }, { abortEarly: false });
+=======
+
+        console.log(phone)
+        console.log(address)
+        try {
+            await Schema.validate({ phone, address }, { abortEarly: false });
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
             const token = sessionStorage.getItem('token')
             const url = 'https://localhost:7225/api/Invoices';
             const data = {
@@ -143,7 +199,11 @@ function Checkout() {
                 "applicationUserId": "string",
                 "applicationUser": null,
                 "issuedDate": "2023-05-20T14:04:06.905Z",
+<<<<<<< HEAD
                 "shippingAddress": editaddress + "," + editward + "," + editdistrict + "," + editcyti,
+=======
+                "shippingAddress": address,
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                 "shippingPhone": phone,
                 "total": 0,
                 "status": 1
@@ -151,6 +211,7 @@ function Checkout() {
             console.log('ok', data)
             axios.post(url, data, {
                 headers: { 'Authorization': `Bearer ${token}` }
+<<<<<<< HEAD
             })
                 .then(() => {
                     toast.success('Đơn hàng đang chờ xác nhận vui lòng đợi');
@@ -221,6 +282,26 @@ function Checkout() {
                 console.log(error)
             })
     }
+=======
+            })
+                .then(() => {
+                    toast.success('Đơn hàng đang chờ xác nhận vui lòng đợi');
+                    usenavigate('/profile')
+                }).catch((error) => {
+                    toast.error(error);
+                })
+        } catch (error) {
+            const validationErrors = error.inner;
+            validationErrors.forEach((error) => {
+                toast.error(error.message);
+            });
+        }
+
+    }
+    const tong = data.reduce((a, v) => a = a + (v.product.price - (v.product.productPromotion.percent * v.product.price) / 100) * v.quantity, 0);
+
+
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
     return (
 
         <Fragment>
@@ -268,6 +349,7 @@ function Checkout() {
                                         className="form-control"
                                         type="text"
                                         placeholder="Nhập Địa chỉ"
+<<<<<<< HEAD
                                         value={editaddress} onChange={(e) => setEditAddress(e.target.value)}
                                     />
                                 </div>
@@ -367,6 +449,11 @@ function Checkout() {
                                                             </option>)
                                                     }
                                                 </select> */}
+=======
+                                        value={address} onChange={(e) => setAddress(e.target.value)}
+                                    />
+                                </div>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                 {/* <div className="col-md-6 form-group">
                                         <label>Address Line 2</label>
                                         <input
@@ -574,6 +661,7 @@ function Checkout() {
                                         onApprove={(data, actions) => {
                                             return actions.order.capture().then((details) => {
                                                 if (details.status === "COMPLETED") {
+<<<<<<< HEAD
                                                     getCyti();
                                                     getaccountaddress();
                                                     handleCheckOutPayPal();
@@ -581,6 +669,14 @@ function Checkout() {
                                                     console.log(data)
                                                 } else {
                                                     toast.error("Thanh toán không thành công vui lòng thử lại")
+=======
+                                                    getData();
+                                                    getUser();
+                                                    console.log('ok', phone)
+                                                    console.log('ok', address)
+                                                    handleCheckOut();
+                                                    console.log(details)
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                                 }
                                             });
                                         }}
@@ -605,7 +701,11 @@ function Checkout() {
                                         <th>Giá</th>
                                         <th>Số lượng</th>
                                         <th>Tổng tiền</th>
+<<<<<<< HEAD
 
+=======
+                                        <th>Remove</th>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                     </tr>
                                 </thead>
                                 <tbody className="align-middle">
@@ -645,7 +745,15 @@ function Checkout() {
                                                         </div>
                                                     </td>
                                                     <td className="align-middle" >{VND.format(item.quantity * (item.product.price - (item.product.productPromotion.percent * item.product.price) / 100))}</td>
+<<<<<<< HEAD
 
+=======
+                                                    <td className="align-middle">
+                                                        <button className="btn btn-sm btn-danger" onClick={() => handleDelect(item.id)}>
+                                                            <i className="fa fa-times" />
+                                                        </button>
+                                                    </td>
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
                                                 </tr>
                                             )
                                         })

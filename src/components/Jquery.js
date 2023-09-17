@@ -105,7 +105,11 @@ function Jquery() {
         //         button.parent().parent().find('input').val(newVal);
         //     });
 
+<<<<<<< HEAD
         // })();
+=======
+        // })(jQuery);
+>>>>>>> f125f77413c46b346417db359020eb1a320fca1c
 
 
     }, []);
